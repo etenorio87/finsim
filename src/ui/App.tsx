@@ -5,13 +5,14 @@
  */
 
 import { useState } from 'react';
+import SimuladorUnico from './components/SimuladorUnico';
 import ComparadorFinanciaciones from './components/ComparadorFinanciaciones';
 import ComparadorContado from './components/ComparadorContado';
 
-type Vista = 'financiaciones' | 'contado';
+type Vista = 'simulador' | 'financiaciones' | 'contado';
 
 function App() {
-  const [vista, setVista] = useState<Vista>('financiaciones');
+  const [vista, setVista] = useState<Vista>('simulador');
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,6 +39,16 @@ function App() {
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="bg-white rounded-2xl p-1.5 shadow-soft inline-flex gap-1">
           <button
+            onClick={() => setVista('simulador')}
+            className={`py-3 px-6 rounded-xl font-medium transition-all duration-200 ${
+              vista === 'simulador'
+                ? 'bg-secondary text-white shadow-lg transform scale-105'
+                : 'text-gray-600 hover:text-secondary hover:bg-gray-50'
+            }`}
+          >
+            Simular financiación
+          </button>
+          <button
             onClick={() => setVista('financiaciones')}
             className={`py-3 px-6 rounded-xl font-medium transition-all duration-200 ${
               vista === 'financiaciones'
@@ -62,11 +73,9 @@ function App() {
 
       {/* Contenido */}
       <main className="max-w-6xl mx-auto px-4 pb-12">
-        {vista === 'financiaciones' ? (
-          <ComparadorFinanciaciones />
-        ) : (
-          <ComparadorContado />
-        )}
+        {vista === 'simulador' && <SimuladorUnico />}
+        {vista === 'financiaciones' && <ComparadorFinanciaciones />}
+        {vista === 'contado' && <ComparadorContado />}
       </main>
 
       {/* Footer */}
