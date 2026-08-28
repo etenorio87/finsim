@@ -32,14 +32,14 @@ describe('Motor de cálculo - Tests de aceptación', () => {
     expect(resultado.cuadro).toHaveLength(59);
 
     // Primera cuota según documento BBVA
-    const primeraCuota = resultado.cuadro![0];
+    const primeraCuota = resultado.cuadro![0]!;
     expect(primeraCuota.numero).toBe(1);
     expect(primeraCuota.interes).toBeCloseTo(44.76, 2);
     expect(primeraCuota.capital).toBeCloseTo(146.02, 2);
     expect(primeraCuota.capitalPendiente).toBeCloseTo(9708.62, 2);
 
     // Segunda cuota según documento BBVA
-    const segundaCuota = resultado.cuadro![1];
+    const segundaCuota = resultado.cuadro![1]!;
     expect(segundaCuota.numero).toBe(2);
     expect(segundaCuota.interes).toBeCloseTo(44.09, 2);
     expect(segundaCuota.capital).toBeCloseTo(146.69, 2);
@@ -180,7 +180,7 @@ describe('Motor de cálculo - Tests de aceptación', () => {
     expect(totalCapitalAmortizado).toBeCloseTo(condiciones.importe, 2);
 
     // Última fila: capital pendiente debe ser prácticamente cero
-    const ultimaFila = cuadro[cuadro.length - 1];
+    const ultimaFila = cuadro[cuadro.length - 1]!;
     expect(ultimaFila.capitalPendiente).toBeCloseTo(0, 2);
   });
 
@@ -300,7 +300,7 @@ describe('Motor de cálculo - Tests adicionales de validación', () => {
     const totalCapital = resultado.cuadro!.reduce((sum, f) => sum + f.capital, 0);
     expect(totalCapital).toBeCloseTo(10000, 2);
 
-    const ultimaFila = resultado.cuadro![resultado.cuadro!.length - 1];
+    const ultimaFila = resultado.cuadro![resultado.cuadro!.length - 1]!;
     expect(ultimaFila.capitalPendiente).toBeCloseTo(0, 2);
   });
 
