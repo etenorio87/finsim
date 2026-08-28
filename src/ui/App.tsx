@@ -14,38 +14,45 @@ function App() {
   const [vista, setVista] = useState<Vista>('financiaciones');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-slate-900/50 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-            Simulador de Financiación
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Decisiones inteligentes, no solo cuotas bajas
-          </p>
+      <header className="bg-white shadow-soft border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <span className="text-white text-xl font-bold">%</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-secondary">
+                Simulador de Financiación
+              </h1>
+              <p className="text-sm text-gray-600">
+                Decisiones inteligentes, no solo cuotas bajas
+              </p>
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Selector de vista */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        <div className="bg-slate-800 rounded-lg p-1 grid grid-cols-2 gap-1">
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="bg-white rounded-2xl p-1.5 shadow-soft inline-flex gap-1">
           <button
             onClick={() => setVista('financiaciones')}
-            className={`py-3 px-4 rounded-md font-medium transition-all ${
+            className={`py-3 px-6 rounded-xl font-medium transition-all duration-200 ${
               vista === 'financiaciones'
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-secondary text-white shadow-lg transform scale-105'
+                : 'text-gray-600 hover:text-secondary hover:bg-gray-50'
             }`}
           >
             Comparar ofertas
           </button>
           <button
             onClick={() => setVista('contado')}
-            className={`py-3 px-4 rounded-md font-medium transition-all ${
+            className={`py-3 px-6 rounded-xl font-medium transition-all duration-200 ${
               vista === 'contado'
-                ? 'bg-emerald-600 text-white shadow-lg'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-secondary text-white shadow-lg transform scale-105'
+                : 'text-gray-600 hover:text-secondary hover:bg-gray-50'
             }`}
           >
             ¿Financiar o contado?
@@ -54,7 +61,7 @@ function App() {
       </div>
 
       {/* Contenido */}
-      <main className="max-w-4xl mx-auto px-4 pb-8">
+      <main className="max-w-6xl mx-auto px-4 pb-12">
         {vista === 'financiaciones' ? (
           <ComparadorFinanciaciones />
         ) : (
@@ -63,10 +70,15 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-4xl mx-auto px-4 py-8 text-center text-slate-500 text-sm">
-        <p>
-          El precio del dinero es la TAE, no la cuota mensual.
-        </p>
+      <footer className="max-w-6xl mx-auto px-4 py-8 mt-12 border-t border-gray-200">
+        <div className="text-center">
+          <p className="text-gray-500 text-sm">
+            💡 El precio del dinero es la <strong className="text-primary">TAE</strong>, no la cuota mensual
+          </p>
+          <p className="text-gray-400 text-xs mt-2">
+            Herramienta de decisión financiera · Datos no persistidos
+          </p>
+        </div>
       </footer>
     </div>
   );

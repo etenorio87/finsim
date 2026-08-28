@@ -42,36 +42,36 @@ export default function ComparadorFinanciaciones() {
     : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Descripción */}
-      <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-        <h2 className="font-semibold mb-2">¿Cuál de estas dos ofertas es mejor?</h2>
-        <p className="text-sm text-slate-400">
+      <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-6 border border-primary/20 shadow-soft">
+        <h2 className="font-bold text-xl mb-3 text-secondary">¿Cuál de estas dos ofertas es mejor?</h2>
+        <p className="text-gray-700 leading-relaxed">
           Introduce las condiciones de cada oferta y compara. El criterio de decisión
-          es la <strong className="text-white">TAE</strong> (el precio real del dinero),
+          es la <strong className="text-primary">TAE</strong> (el precio real del dinero),
           no la cuota mensual.
         </p>
       </div>
 
       {/* Formularios */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6">
         {/* Oferta A */}
-        <div className="bg-slate-800 rounded-lg p-5 border-2 border-blue-500/30">
+        <div className="bg-card rounded-2xl p-6 border-2 border-primary shadow-card hover:shadow-hover transition-shadow">
           <FormularioCondiciones
             label="Oferta A"
             condiciones={condicionesA}
             onChange={setCondicionesA}
-            colorAccent="blue"
+            colorAccent="primary"
           />
         </div>
 
         {/* Oferta B */}
-        <div className="bg-slate-800 rounded-lg p-5 border-2 border-emerald-500/30">
+        <div className="bg-card rounded-2xl p-6 border-2 border-primary shadow-card hover:shadow-hover transition-shadow">
           <FormularioCondiciones
             label="Oferta B"
             condiciones={condicionesB}
             onChange={setCondicionesB}
-            colorAccent="emerald"
+            colorAccent="accent"
           />
         </div>
       </div>
@@ -79,37 +79,40 @@ export default function ComparadorFinanciaciones() {
       {/* Botón comparar */}
       <button
         onClick={handleComparar}
-        className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-semibold py-4 px-6 rounded-lg shadow-lg transition-all"
+        className="w-full bg-secondary hover:bg-secondary/90 text-white font-bold py-5 px-6 rounded-2xl shadow-lg hover:shadow-hover transition-all transform hover:scale-[1.02] active:scale-[0.98]"
       >
-        Comparar ofertas
+        <span className="text-lg">Comparar ofertas</span>
       </button>
 
       {/* Resultados */}
       {comparacion && (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-6 animate-slide-up">
           {/* Resumen de la comparación */}
-          <div className="bg-gradient-to-r from-blue-600/20 to-emerald-600/20 rounded-lg p-6 border border-blue-500/30">
-            <h3 className="text-xl font-bold mb-2">
-              Mejor oferta: {comparacion.ganadora === 'a' ? 'A' : 'B'}
-            </h3>
-            <p className="text-slate-300 text-sm">
-              Diferencia de TAE:{' '}
-              <span className="font-semibold">
-                {(comparacion.diferenciaTae * 100).toFixed(2)}%
-              </span>
-            </p>
+          <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl p-8 border-2 border-primary/30 shadow-card">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-black text-secondary">
+                🏆 Mejor oferta: {comparacion.ganadora === 'a' ? 'A' : 'B'}
+              </h3>
+              <div className="text-right">
+                <div className="text-sm text-gray-600">Diferencia de TAE</div>
+                <div className="text-2xl font-bold text-primary">
+                  {(comparacion.diferenciaTae * 100).toFixed(2)}%
+                </div>
+              </div>
+            </div>
 
             {comparacion.avisoPlazosDistintos && (
-              <div className="mt-4 bg-amber-500/20 border border-amber-500/50 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <span className="text-amber-400 text-2xl">⚠️</span>
-                  <div className="text-sm text-amber-100">
-                    <p className="font-semibold mb-1">
+              <div className="mt-6 bg-yellow-50 border-2 border-yellow-400 rounded-xl p-5">
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl">⚠️</span>
+                  <div className="text-sm text-yellow-900">
+                    <p className="font-bold text-base mb-2">
                       Atención: Los plazos son diferentes
                     </p>
-                    <p className="text-amber-200/80">
+                    <p className="text-yellow-800 leading-relaxed">
                       Con la misma TAE, un plazo más largo produce muchos más intereses
-                      totales. Compara el coste financiero total abajo.
+                      totales. No te dejes engañar por una cuota más baja. Compara el
+                      coste financiero total en las tarjetas de abajo.
                     </p>
                   </div>
                 </div>
@@ -118,17 +121,17 @@ export default function ComparadorFinanciaciones() {
           </div>
 
           {/* Resultados detallados */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 gap-6">
             <ResultadoFinanciacion
               resultado={calcular(condicionesA, { incluirCuadro: true })}
               label="Oferta A"
-              colorAccent="blue"
+              colorAccent="primary"
               esGanadora={comparacion.ganadora === 'a'}
             />
             <ResultadoFinanciacion
               resultado={calcular(condicionesB, { incluirCuadro: true })}
               label="Oferta B"
-              colorAccent="emerald"
+              colorAccent="accent"
               esGanadora={comparacion.ganadora === 'b'}
             />
           </div>

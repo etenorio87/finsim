@@ -8,29 +8,34 @@ interface Props {
   label: string;
   condiciones: Condiciones;
   onChange: (condiciones: Condiciones) => void;
-  colorAccent?: string;
+  colorAccent?: 'primary' | 'accent';
 }
 
 export default function FormularioCondiciones({
   label,
   condiciones,
   onChange,
-  colorAccent = 'blue',
+  colorAccent = 'primary',
 }: Props) {
-  const accentClasses = {
-    blue: 'focus:ring-blue-500 focus:border-blue-500',
-    emerald: 'focus:ring-emerald-500 focus:border-emerald-500',
-  };
-
-  const accentClass = accentClasses[colorAccent as keyof typeof accentClasses] || accentClasses.blue;
+  const borderColor = colorAccent === 'primary' ? 'border-primary' : 'border-accent';
+  const bgGradient = colorAccent === 'primary'
+    ? 'from-primary/5 to-transparent'
+    : 'from-accent/5 to-transparent';
 
   return (
-    <div className="space-y-4">
-      <h3 className="font-semibold text-lg">{label}</h3>
+    <div className="space-y-5">
+      <div className={`flex items-center gap-2 pb-3 border-b-2 ${borderColor}`}>
+        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${bgGradient} ${borderColor} border-2 flex items-center justify-center`}>
+          <span className={`font-bold ${colorAccent === 'primary' ? 'text-primary' : 'text-accent'}`}>
+            {label === 'Oferta A' ? 'A' : label === 'Oferta B' ? 'B' : 'F'}
+          </span>
+        </div>
+        <h3 className="font-bold text-lg text-secondary">{label}</h3>
+      </div>
 
       {/* Importe */}
       <div>
-        <label className="block text-sm text-slate-400 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Importe (€)
         </label>
         <input
@@ -39,7 +44,7 @@ export default function FormularioCondiciones({
           onChange={(e) =>
             onChange({ ...condiciones, importe: parseFloat(e.target.value) || 0 })
           }
-          className={`w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white ${accentClass}`}
+          className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-secondary transition-all focus:border-primary"
           placeholder="10000"
           step="0.01"
         />
@@ -47,7 +52,7 @@ export default function FormularioCondiciones({
 
       {/* Número de cuotas */}
       <div>
-        <label className="block text-sm text-slate-400 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Número de cuotas
         </label>
         <input
@@ -59,14 +64,14 @@ export default function FormularioCondiciones({
               numeroCuotas: parseInt(e.target.value) || 0,
             })
           }
-          className={`w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white ${accentClass}`}
+          className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-secondary transition-all focus:border-primary"
           placeholder="24"
         />
       </div>
 
       {/* Frecuencia */}
       <div>
-        <label className="block text-sm text-slate-400 mb-1">Frecuencia</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Frecuencia</label>
         <select
           value={condiciones.frecuencia}
           onChange={(e) =>
@@ -75,7 +80,7 @@ export default function FormularioCondiciones({
               frecuencia: e.target.value as Frecuencia,
             })
           }
-          className={`w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white ${accentClass}`}
+          className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-secondary transition-all focus:border-primary"
         >
           <option value="mensual">Mensual</option>
           <option value="trimestral">Trimestral</option>
@@ -85,7 +90,7 @@ export default function FormularioCondiciones({
 
       {/* TIN */}
       <div>
-        <label className="block text-sm text-slate-400 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           TIN anual (%)
         </label>
         <input
@@ -97,25 +102,25 @@ export default function FormularioCondiciones({
               tin: parseFloat(e.target.value) / 100 || 0,
             })
           }
-          className={`w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white ${accentClass}`}
+          className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-secondary transition-all focus:border-primary"
           placeholder="5.45"
           step="0.01"
         />
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-gray-500 mt-2">
           Escribe 0 para "sin intereses"
         </p>
       </div>
 
       {/* Comisiones */}
       <div>
-        <label className="block text-sm text-slate-400 mb-2">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
           Comisiones (opcional)
         </label>
 
         {condiciones.comisiones.map((comision, index) => (
           <div
             key={index}
-            className="bg-slate-700/50 rounded-lg p-3 mb-2 space-y-2"
+            className="bg-gray-50 rounded-xl p-4 mb-3 border border-gray-200 space-y-3"
           >
             <div className="flex justify-between items-center">
               <input
@@ -129,7 +134,7 @@ export default function FormularioCondiciones({
                   };
                   onChange({ ...condiciones, comisiones: nuevasComisiones });
                 }}
-                className="bg-slate-600 border border-slate-500 rounded px-2 py-1 text-sm flex-1 mr-2"
+                className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 mr-2 focus:border-primary"
                 placeholder="Descripción"
               />
               <button
@@ -139,13 +144,13 @@ export default function FormularioCondiciones({
                   );
                   onChange({ ...condiciones, comisiones: nuevasComisiones });
                 }}
-                className="text-red-400 hover:text-red-300 text-sm"
+                className="text-negative hover:bg-negative/10 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
               >
                 ✕
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <input
                 type="number"
                 value={comision.importe || ''}
@@ -157,7 +162,7 @@ export default function FormularioCondiciones({
                   };
                   onChange({ ...condiciones, comisiones: nuevasComisiones });
                 }}
-                className="bg-slate-600 border border-slate-500 rounded px-2 py-1 text-sm"
+                className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary"
                 placeholder="Importe (€)"
                 step="0.01"
               />
@@ -172,7 +177,7 @@ export default function FormularioCondiciones({
                   };
                   onChange({ ...condiciones, comisiones: nuevasComisiones });
                 }}
-                className="bg-slate-600 border border-slate-500 rounded px-2 py-1 text-sm"
+                className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary"
               >
                 <option value="primeraCuota">1ª cuota</option>
                 <option value="descontadaDelImporte">Descontada</option>
@@ -195,9 +200,9 @@ export default function FormularioCondiciones({
               ],
             });
           }}
-          className="text-sm text-slate-400 hover:text-white"
+          className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1"
         >
-          + Añadir comisión
+          <span className="text-lg">+</span> Añadir comisión
         </button>
       </div>
     </div>
