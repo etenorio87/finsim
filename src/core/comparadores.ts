@@ -11,6 +11,7 @@ import type {
   ComparacionFinanciaciones,
   ComparacionContado,
 } from './types';
+import { calcular } from './motor';
 
 /**
  * Compara dos ofertas de financiación.
@@ -22,8 +23,27 @@ export function compararFinanciaciones(
   a: Condiciones,
   b: Condiciones
 ): ComparacionFinanciaciones {
-  // TODO: Implementar
-  throw new Error('compararFinanciaciones() no implementado');
+  // Calcular resultados de ambas financiaciones
+  const resultadoA = calcular(a);
+  const resultadoB = calcular(b);
+
+  // Comparar por TAE
+  const ganadora = resultadoA.tae <= resultadoB.tae ? 'a' : 'b';
+  const diferenciaTae = Math.abs(resultadoA.tae - resultadoB.tae);
+
+  // Activar aviso si los plazos difieren (§5)
+  const avisoPlazosDistintos = a.numeroCuotas !== b.numeroCuotas;
+
+  return {
+    ganadora,
+    criterio: 'tae',
+    diferenciaTae,
+    avisoPlazosDistintos,
+    detalle: {
+      a: resultadoA,
+      b: resultadoB,
+    },
+  };
 }
 
 /**
@@ -37,6 +57,28 @@ export function compararConContado(
   rentabilidadBruta: number,
   tipoImpositivo: number
 ): ComparacionContado {
-  // TODO: Implementar
-  throw new Error('compararConContado() no implementado');
+  // Calcular la TAE real de la financiación
+  const resultado = calcular(financiacion);
+  const taeFinanciacion = resultado.tae;
+
+  // Calcular rentabilidad neta
+  const rentabilidadNeta = rentabilidadBruta * (1 - tipoImpositivo);
+
+  // Decisión: financiar solo si TAE < rentabilidad neta
+  const recomendacion =
+    taeFinanciacion < rentabilidadNeta ? 'financiar' : 'pagarAlContado';
+
+  // Diferencia de tipos (positiva si conviene financiar)
+  const diferenciaTipos = rentabilidadNeta - taeFinanciacion;
+
+  // Coste estimado: el coste financiero total
+  const costeEstimadoEuros = resultado.costeFinanciero;
+
+  return {
+    recomendacion,
+    taeFinanciacion,
+    rentabilidadNeta,
+    diferenciaTipos,
+    costeEstimadoEuros,
+  };
 }
