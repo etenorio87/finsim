@@ -2,6 +2,7 @@
  * Formulario para entrada de condiciones de financiación
  */
 
+import { useState } from 'react';
 import type { Condiciones, Frecuencia } from '../../core/types';
 
 interface Props {
@@ -11,12 +12,34 @@ interface Props {
   colorAccent?: 'primary' | 'accent';
 }
 
+/**
+ * Normaliza separadores decimales: convierte coma a punto
+ */
+function normalizarDecimal(valor: string): string {
+  return valor.replace(',', '.');
+}
+
+/**
+ * Parsea un string a número aceptando coma o punto como separador decimal
+ */
+function parseDecimal(valor: string): number {
+  const normalizado = normalizarDecimal(valor);
+  const numero = parseFloat(normalizado);
+  return isNaN(numero) ? 0 : numero;
+}
+
 export default function FormularioCondiciones({
   label,
   condiciones,
   onChange,
   colorAccent = 'primary',
 }: Props) {
+  // Estados locales para mantener texto libre mientras el usuario escribe
+  const [importeTexto, setImporteTexto] = useState<string>('');
+  const [tinTexto, setTinTexto] = useState<string>('');
+  const [importeEnFoco, setImporteEnFoco] = useState(false);
+  const [tinEnFoco, setTinEnFoco] = useState(false);
+
   const borderColor = colorAccent === 'primary' ? 'border-primary' : 'border-accent';
   const bgGradient = colorAccent === 'primary'
     ? 'from-primary/5 to-transparent'
@@ -39,14 +62,24 @@ export default function FormularioCondiciones({
           Importe (€)
         </label>
         <input
-          type="number"
-          value={condiciones.importe}
-          onChange={(e) =>
-            onChange({ ...condiciones, importe: parseFloat(e.target.value) || 0 })
-          }
+          type="text"
+          inputMode="decimal"
+          value={importeEnFoco ? importeTexto : condiciones.importe.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          onFocus={(e) => {
+            setImporteEnFoco(true);
+            setImporteTexto(condiciones.importe.toString().replace('.', ','));
+            e.target.select();
+          }}
+          onChange={(e) => {
+            setImporteTexto(e.target.value);
+          }}
+          onBlur={() => {
+            const valor = parseDecimal(importeTexto);
+            onChange({ ...condiciones, importe: valor });
+            setImporteEnFoco(false);
+          }}
           className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-secondary transition-all focus:border-primary"
           placeholder="10000"
-          step="0.01"
         />
       </div>
 
@@ -94,17 +127,24 @@ export default function FormularioCondiciones({
           TIN anual (%)
         </label>
         <input
-          type="number"
-          value={(condiciones.tin * 100).toFixed(2)}
-          onChange={(e) =>
-            onChange({
-              ...condiciones,
-              tin: parseFloat(e.target.value) / 100 || 0,
-            })
-          }
+          type="text"
+          inputMode="decimal"
+          value={tinEnFoco ? tinTexto : (condiciones.tin * 100).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          onFocus={(e) => {
+            setTinEnFoco(true);
+            setTinTexto((condiciones.tin * 100).toString().replace('.', ','));
+            e.target.select();
+          }}
+          onChange={(e) => {
+            setTinTexto(e.target.value);
+          }}
+          onBlur={() => {
+            const valor = parseDecimal(tinTexto) / 100;
+            onChange({ ...condiciones, tin: valor });
+            setTinEnFoco(false);
+          }}
           className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-secondary transition-all focus:border-primary"
-          placeholder="5.45"
-          step="0.01"
+          placeholder="5,45"
         />
         <p className="text-xs text-gray-500 mt-2">
           Escribe 0 para "sin intereses"
