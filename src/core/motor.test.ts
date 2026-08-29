@@ -53,6 +53,10 @@ describe('Motor de cálculo - Tests de aceptación', () => {
    *
    * Caso típico: TIN 0% pero con comisión de apertura.
    * El saldo medio NO es importe/2 porque al final aún se debe una cuota.
+   *
+   * NOTA: El modelo 'primeraCuota' carga toda la comisión en la primera cuota,
+   * lo que produce un flujo de caja distinto al modelo de "comisión prorrateada".
+   * Este modelo es el correcto según validación con casos reales (Cetelem T3).
    */
   it('T2: Móvil "sin intereses" con comisión en primera cuota', () => {
     const condiciones: Condiciones = {
@@ -75,8 +79,9 @@ describe('Motor de cálculo - Tests de aceptación', () => {
     // Razón: al final del último periodo todavía se debe una cuota de capital
     expect(resultado.saldoMedio).toBeCloseTo(330.0, 2);
 
-    // TAE aproximada (tolerancia a 2 decimales por variación en método de cálculo)
-    expect(resultado.tae).toBeCloseTo(0.0669, 2);
+    // TAE con comisión en primera cuota (modelo correcto según T3)
+    // Valor corregido de 0.0669 a 0.0686 tras validación con Cetelem
+    expect(resultado.tae).toBeCloseTo(0.0686, 3);
   });
 
   /**
@@ -324,5 +329,30 @@ describe('Motor de cálculo - Tests adicionales de validación', () => {
     // Coherencia interna
     const totalCapital = resultado.cuadro!.reduce((sum, f) => sum + f.capital, 0);
     expect(totalCapital).toBeCloseTo(10000, 2);
+  });
+
+  /**
+   * T-REG-4 · Test de regresión para issue #4
+   *
+   * Caso: importe con decimales debe calcular cuota correcta
+   * Previene error de conversión del separador decimal
+   */
+  it('T-REG-4: Importe decimal calcula cuota correcta (#4)', () => {
+    const condiciones: Condiciones = {
+      importe: 9854.64,
+      numeroCuotas: 59,
+      frecuencia: 'mensual',
+      tin: 0.05,
+      comisiones: [],
+    };
+
+    const resultado = calcular(condiciones);
+
+    // La cuota debe ser exactamente 188.74 (±0.01)
+    // NO 188.77 que correspondería a un importe de 9855.81
+    expect(resultado.cuota).toBeCloseTo(188.74, 1);
+
+    // Saldo medio también debe ser correcto
+    expect(resultado.saldoMedio).toBeCloseTo(5212.04, 1);
   });
 });
