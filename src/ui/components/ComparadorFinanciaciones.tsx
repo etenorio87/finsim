@@ -91,7 +91,7 @@ export default function ComparadorFinanciaciones() {
           <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl p-8 border-2 border-primary/30 shadow-card">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-black text-secondary">
-                🏆 Mejor oferta: {comparacion.ganadora === 'a' ? 'A' : 'B'}
+                {comparacion.avisoPlazosDistintos ? '💰 Dinero más barato' : '🏆 Mejor oferta'}: {comparacion.ganadora === 'a' ? 'A' : 'B'}
               </h3>
               <div className="text-right">
                 <div className="text-sm text-gray-600">Diferencia de TAE</div>
@@ -110,9 +110,9 @@ export default function ComparadorFinanciaciones() {
                       Atención: Los plazos son diferentes
                     </p>
                     <p className="text-yellow-800 leading-relaxed">
-                      Con la misma TAE, un plazo más largo produce muchos más intereses
-                      totales. No te dejes engañar por una cuota más baja. Compara el
-                      coste financiero total en las tarjetas de abajo.
+                      Son decisiones distintas: la oferta {comparacion.ganadora === 'a' ? 'A' : 'B'} es dinero más barato,
+                      pero estarás endeudado durante más tiempo. Depende de qué hagas con la liquidez que liberas.
+                      Compara el coste financiero total en las tarjetas de abajo.
                     </p>
                   </div>
                 </div>
@@ -127,12 +127,14 @@ export default function ComparadorFinanciaciones() {
               label="Oferta A"
               colorAccent="primary"
               esGanadora={comparacion.ganadora === 'a'}
+              textoBadge={comparacion.avisoPlazosDistintos ? 'Dinero más barato' : 'Mejor oferta'}
             />
             <ResultadoFinanciacion
               resultado={calcular(condicionesB, { incluirCuadro: true })}
               label="Oferta B"
               colorAccent="accent"
               esGanadora={comparacion.ganadora === 'b'}
+              textoBadge={comparacion.avisoPlazosDistintos ? 'Dinero más barato' : 'Mejor oferta'}
             />
           </div>
         </div>

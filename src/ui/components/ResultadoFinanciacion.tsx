@@ -15,6 +15,7 @@ interface Props {
   label?: string;
   colorAccent?: 'primary' | 'accent' | 'positive';
   esGanadora?: boolean;
+  textoBadge?: string;
   mostrarAviso?: boolean;
   avisoTexto?: string;
 }
@@ -24,6 +25,7 @@ export default function ResultadoFinanciacion({
   label,
   colorAccent = 'primary',
   esGanadora = false,
+  textoBadge = 'Mejor oferta',
   mostrarAviso = false,
   avisoTexto,
 }: Props) {
@@ -65,7 +67,7 @@ export default function ResultadoFinanciacion({
           <h4 className="font-bold text-lg text-secondary">{label}</h4>
           {esGanadora && (
             <span className={`${colors.text} text-sm font-bold px-3 py-1 rounded-full ${colors.bg} flex items-center gap-1`}>
-              <span className="text-lg">✓</span> Mejor oferta
+              <span className="text-lg">✓</span> {textoBadge}
             </span>
           )}
         </div>
