@@ -124,6 +124,7 @@ export default function ComparadorFinanciaciones() {
           <div className="grid lg:grid-cols-2 gap-6">
             <ResultadoFinanciacion
               resultado={calcular(condicionesA, { incluirCuadro: true })}
+              condiciones={condicionesA}
               label="Oferta A"
               colorAccent="primary"
               esGanadora={comparacion.ganadora === 'a'}
@@ -131,6 +132,7 @@ export default function ComparadorFinanciaciones() {
             />
             <ResultadoFinanciacion
               resultado={calcular(condicionesB, { incluirCuadro: true })}
+              condiciones={condicionesB}
               label="Oferta B"
               colorAccent="accent"
               esGanadora={comparacion.ganadora === 'b'}

@@ -66,6 +66,7 @@ export default function SimuladorUnico() {
         <div className="animate-slide-up">
           <ResultadoFinanciacion
             resultado={resultado}
+            condiciones={condiciones}
             colorAccent="primary"
           />
         </div>

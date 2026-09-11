@@ -9,7 +9,13 @@
       "Bash(verify-i.js:*)",
       "Bash(npx tsx:*)",
       "Bash(kill:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git push)",
+      "Bash(gh api:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)"
     ]
   }
 }

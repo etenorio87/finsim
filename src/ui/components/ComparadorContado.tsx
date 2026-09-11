@@ -231,6 +231,7 @@ export default function ComparadorContado() {
             </h3>
             <ResultadoFinanciacion
               resultado={calcular(condiciones, { incluirCuadro: true })}
+              condiciones={condiciones}
               colorAccent="primary"
             />
           </div>

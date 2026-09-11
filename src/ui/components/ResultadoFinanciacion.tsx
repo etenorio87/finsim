@@ -8,10 +8,12 @@
  */
 
 import { useState } from 'react';
-import type { Resultado } from '../../core/types';
+import type { Resultado, Condiciones } from '../../core/types';
+import { exportarExcel, exportarPDF } from '../utils/exportar';
 
 interface Props {
   resultado: Resultado;
+  condiciones: Condiciones;
   label?: string;
   colorAccent?: 'primary' | 'accent' | 'positive';
   esGanadora?: boolean;
@@ -22,6 +24,7 @@ interface Props {
 
 export default function ResultadoFinanciacion({
   resultado,
+  condiciones,
   label,
   colorAccent = 'primary',
   esGanadora = false,
@@ -161,6 +164,24 @@ export default function ResultadoFinanciacion({
               {resultado.cuadro.length} cuotas
             </span>
           </button>
+
+          {/* Botones de exportación */}
+          <div className="mt-3 flex gap-2">
+            <button
+              onClick={() => exportarExcel(condiciones, resultado)}
+              className="flex-1 bg-positive hover:bg-positive/90 text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors flex items-center justify-center gap-2"
+            >
+              <span>📊</span>
+              <span>Exportar a Excel</span>
+            </button>
+            <button
+              onClick={() => exportarPDF(condiciones, resultado)}
+              className="flex-1 bg-negative hover:bg-negative/90 text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors flex items-center justify-center gap-2"
+            >
+              <span>📄</span>
+              <span>Exportar a PDF</span>
+            </button>
+          </div>
 
           {mostrarCuadro && (
             <div className="mt-4 overflow-x-auto bg-gray-50 rounded-xl p-4">

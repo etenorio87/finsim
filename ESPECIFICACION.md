@@ -223,8 +223,19 @@ importe: 9854.64 · cuotas: 59 · mensual · tin: 0.0545 · sin comisiones
 ```
 importe: 600 · cuotas: 10 · mensual · tin: 0 · comisión 18 € en primeraCuota
 → saldoMedio = 330.00        (NO 300)
-→ tae ≈ 0.0669
+→ tae ≈ 0.0686               (tolerancia 3 decimales)
 ```
+
+⚠️ **Corregido el 28/08/2026.** El valor original de esta spec (0,0669) se calculó repartiendo la comisión entre las 10 cuotas, lo que **contradice** `momento: 'primeraCuota'`. El flujo correcto es 78 € + 9 × 60 €.
+
+Validación contra realidad (caso Cetelem, TAE declarada 5,76 %):
+
+| Modelo | TAE calculada |
+|---|---|
+| Comisión prorrateada | 5,63 % ❌ |
+| **Comisión en primera cuota** | **5,78 %** ✅ |
+
+> **Regla:** si un test no pasa, **avisar**. Nunca relajar la tolerancia para que pase.
 
 ### T3 · Cetelem aplazado (caso real)
 ```
