@@ -60,3 +60,37 @@ export interface ComparacionContado {
   diferenciaTipos: number;
   costeEstimadoEuros: number;     // informativo
 }
+
+/**
+ * Estrategia de amortización parcial
+ */
+export type EstrategiaAmortizacion = 'reducirCuota' | 'reducirPlazo';
+
+/**
+ * Parámetros para simular una amortización parcial
+ */
+export interface ParametrosAmortizacionParcial {
+  condicionesOriginales: Condiciones;
+  capitalAmortizado: number;       // cantidad a amortizar (€)
+  cuotaAmortizacion: number;        // en qué cuota se hace (1-indexed)
+  estrategia: EstrategiaAmortizacion;
+}
+
+/**
+ * Resultado de una simulación de amortización parcial
+ */
+export interface ResultadoAmortizacionParcial {
+  escenarioOriginal: Resultado;
+  escenarioNuevo: Resultado;
+  condicionesNuevas: Condiciones;
+  ahorro: {
+    intereses: number;              // intereses ahorrados (€)
+    costeTotal: number;             // ahorro en coste total (€)
+    diferenciaAhorroTAE: number;    // TAE original - TAE nueva (decimal)
+    cuotasEliminadas?: number;      // solo para estrategia reducirPlazo
+    reduccionCuota?: number;        // solo para estrategia reducirCuota (€)
+  };
+  capitalAmortizado: number;
+  cuotaAmortizacion: number;
+  estrategia: EstrategiaAmortizacion;
+}

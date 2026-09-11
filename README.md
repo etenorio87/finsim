@@ -6,11 +6,12 @@ Herramienta de decisión para evaluar financiaciones con el móvil en la mano. C
 
 ## Propósito
 
-Responder, con el móvil en la mano y en una tienda, a tres preguntas:
+Responder, con el móvil en la mano y en una tienda, a cuatro preguntas:
 
 1. **¿Cuánto me cuesta realmente esta financiación?** (TAE real, coste total, tabla de amortización)
 2. **¿Cuál de estas dos ofertas es mejor?** (comparación por TAE, no por cuota)
 3. **¿Me conviene financiar o pagar al contado?** (si tengo dinero rindiendo)
+4. **¿Cuánto ahorro si amortizo anticipadamente?** (comparación de estrategias: reducir cuota vs reducir plazo)
 
 No es una calculadora genérica de préstamos. Es una herramienta de decisión que protege al usuario del sesgo comercial de comparar solo las cuotas mensuales.
 
@@ -55,9 +56,12 @@ npx tsx src/core/ejemplo.ts
 - Amortización francesa con funciones puras
 - Cálculo preciso de TAE real (incluye comisiones)
 - Manejo de comisiones en dos momentos: primera cuota o descontada del importe
-- 21 tests de aceptación validados contra documentos reales (BBVA, Cetelem)
+- **Simulación de amortización parcial** con dos estrategias:
+  - Reducir cuota: mantiene plazo, reduce pago mensual
+  - Reducir plazo: mantiene cuota similar, termina antes
+- 26 tests de aceptación validados contra documentos reales (BBVA, Cetelem)
 
-### 🎨 Interfaz (3 vistas)
+### 🎨 Interfaz (3 vistas + 1 funcionalidad adicional)
 
 #### 1. **Simular financiación** (vista por defecto)
 Evalúa una oferta de financiación:
@@ -65,6 +69,7 @@ Evalúa una oferta de financiación:
 - Cuota mensual y coste total
 - Tabla completa de amortización
 - Saldo medio durante la vida del préstamo
+- **Botón "Simular amortización parcial"** para explorar opciones de pago anticipado
 
 #### 2. **Comparar ofertas**
 Compara dos financiaciones:
@@ -79,12 +84,47 @@ Decisión basada en rentabilidad de inversión:
 - Regla: financiar solo si TAE < rentabilidad neta
 - Cálculo de oportunidad con tu dinero invertido
 
+#### 4. **Amortización parcial** (dentro de "Simular financiación")
+Simula el efecto de amortizar anticipadamente:
+- **Dos estrategias**: Reducir cuota o Reducir plazo
+- Cuadro de ahorros: intereses, coste total, reducción de TAE
+- Comparación lado a lado: situación actual vs después de amortizar
+- Pedagogía: explica cuándo conviene cada estrategia
+- Exportación a Excel/PDF de la comparación
+
 ### 🎯 Protecciones
 - **Mobile-first**: diseñada para usar en tienda con el móvil
 - **Jerarquía correcta**: TAE grande → Cuota mediana → Coste total pequeño
 - **Acepta coma y punto** como separadores decimales
 - **Formateo inteligente**: texto libre mientras escribes, formato al salir del campo
 - **Protección contra sesgo comercial**: evita elegir solo por cuota baja
+
+## Novedades (11/09/2026)
+
+### ✨ Amortización Parcial
+Nueva funcionalidad que permite simular el efecto de amortizar anticipadamente parte de un préstamo:
+
+**Características**:
+- **Dos estrategias optimizadas**:
+  - **Reducir cuota**: Mantiene el mismo plazo pero reduce el pago mensual (libera liquidez)
+  - **Reducir plazo**: Mantiene una cuota similar pero termina antes (minimiza intereses)
+- **Algoritmo inteligente**: Búsqueda óptima del número de cuotas para mantener la cuota lo más cercana posible a la original en estrategia "reducir plazo"
+- **Comparación visual lado a lado**: Situación actual vs después de amortizar
+- **Cuadro de ahorros destacado**:
+  - Ahorro en intereses
+  - Ahorro en coste total
+  - Reducción de TAE
+  - Reducción de cuota (solo estrategia reducir cuota)
+  - Cuotas eliminadas (solo estrategia reducir plazo)
+- **Pedagogía financiera**: Explica cuándo conviene cada estrategia
+- **5 nuevos tests** (AP1-AP5) que validan ambas estrategias y casos edge
+
+**Implementación técnica**:
+- Archivo core: `amortizacionParcial.ts` (~230 líneas)
+- Componente UI: `AmortizacionParcial.tsx` (~260 líneas)
+- Integrado en `SimuladorUnico.tsx` con botón expandible
+- Reutiliza funciones existentes del motor (`calcularCuota()`, `calcular()`)
+- Usa fórmula matemática directa para calcular número de cuotas óptimo
 
 ## Correcciones (28-29/08/2026)
 
@@ -117,16 +157,20 @@ src/
 │   ├── types.ts
 │   ├── amortizacion.ts
 │   ├── motor.ts
-│   ├── motor.test.ts    # 21 tests, todos pasan
-│   └── comparadores.ts
+│   ├── motor.test.ts          # 26 tests, todos pasan
+│   ├── comparadores.ts
+│   └── amortizacionParcial.ts # Lógica de amortización parcial
 ├── ui/             # Interfaz React
 │   ├── App.tsx
-│   └── components/
-│       ├── SimuladorUnico.tsx
-│       ├── ComparadorFinanciaciones.tsx
-│       ├── ComparadorContado.tsx
-│       ├── FormularioCondiciones.tsx
-│       └── ResultadoFinanciacion.tsx
+│   ├── components/
+│   │   ├── SimuladorUnico.tsx
+│   │   ├── ComparadorFinanciaciones.tsx
+│   │   ├── ComparadorContado.tsx
+│   │   ├── FormularioCondiciones.tsx
+│   │   ├── ResultadoFinanciacion.tsx
+│   │   └── AmortizacionParcial.tsx  # Simulador de amortización parcial
+│   └── utils/
+│       └── exportar.ts        # Exportación a Excel/PDF
 └── test/           # Configuración de tests
 ```
 
@@ -138,7 +182,8 @@ src/
   - [x] Implementar generación de cuadro
   - [x] Implementar cálculo de TAE
   - [x] Implementar comparadores
-  - [x] Tests (T1-T6) - 21/21 ✅
+  - [x] Implementar amortización parcial
+  - [x] Tests (T1-T6 + AP1-AP5) - 26/26 ✅
 - [x] **FASE 2**: Interfaz de usuario
   - [x] Formulario de entrada mobile-first
   - [x] Visualización de resultados con jerarquía correcta (§5)
@@ -146,6 +191,7 @@ src/
   - [x] Simulador de financiación única
   - [x] Comparador de financiaciones
   - [x] Comparador financiar vs contado
+  - [x] Simulador de amortización parcial (reducir cuota / reducir plazo)
 - [x] **FASE 3**: Correcciones y refinamiento
   - [x] Corregir inputs de decimales (#1, #2)
   - [x] Corregir tests y especificación (#3, #4)

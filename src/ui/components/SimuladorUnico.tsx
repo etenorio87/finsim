@@ -11,6 +11,7 @@ import type { Condiciones } from '../../core/types';
 import { calcular } from '../../core/motor';
 import FormularioCondiciones from './FormularioCondiciones';
 import ResultadoFinanciacion from './ResultadoFinanciacion';
+import AmortizacionParcial from './AmortizacionParcial';
 
 const condicionesInicial: Condiciones = {
   importe: 10000,
@@ -23,6 +24,7 @@ const condicionesInicial: Condiciones = {
 export default function SimuladorUnico() {
   const [condiciones, setCondiciones] = useState<Condiciones>(condicionesInicial);
   const [mostrarResultados, setMostrarResultados] = useState(false);
+  const [mostrarAmortizacion, setMostrarAmortizacion] = useState(false);
 
   const handleSimular = () => {
     setMostrarResultados(true);
@@ -63,12 +65,31 @@ export default function SimuladorUnico() {
 
       {/* Resultados */}
       {resultado && (
-        <div className="animate-slide-up">
+        <div className="space-y-6 animate-slide-up">
           <ResultadoFinanciacion
             resultado={resultado}
             condiciones={condiciones}
             colorAccent="primary"
           />
+
+          {/* Botón para simular amortización parcial */}
+          {!mostrarAmortizacion && (
+            <button
+              onClick={() => setMostrarAmortizacion(true)}
+              className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-hover transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              💰 Simular amortización parcial
+            </button>
+          )}
+
+          {/* Componente de amortización parcial */}
+          {mostrarAmortizacion && (
+            <AmortizacionParcial
+              condiciones={condiciones}
+              resultadoOriginal={resultado}
+              onCerrar={() => setMostrarAmortizacion(false)}
+            />
+          )}
         </div>
       )}
     </div>

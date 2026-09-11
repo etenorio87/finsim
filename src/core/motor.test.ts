@@ -9,6 +9,7 @@ import { describe, it, expect } from 'vitest';
 import type { Condiciones } from './types';
 import { calcular } from './motor';
 import { compararFinanciaciones } from './comparadores';
+import { simularAmortizacionParcial } from './amortizacionParcial';
 
 describe('Motor de cálculo - Tests de aceptación', () => {
   /**
@@ -354,5 +355,209 @@ describe('Motor de cálculo - Tests adicionales de validación', () => {
 
     // Saldo medio también debe ser correcto
     expect(resultado.saldoMedio).toBeCloseTo(5212.04, 1);
+  });
+});
+
+describe('Amortización parcial - Tests de aceptación', () => {
+  /**
+   * AP1 · Reducir cuota - validar nueva cuota y ahorro
+   *
+   * Préstamo: 10000€, 24 meses, 6% TIN
+   * Amortizar 2000€ en mes 12 con estrategia reducirCuota
+   */
+  it('AP1: Reducir cuota - validar nueva cuota y ahorro', () => {
+    const condiciones: Condiciones = {
+      importe: 10000,
+      numeroCuotas: 24,
+      frecuencia: 'mensual',
+      tin: 0.06,
+      comisiones: [],
+    };
+
+    const resultado = simularAmortizacionParcial({
+      condicionesOriginales: condiciones,
+      capitalAmortizado: 2000,
+      cuotaAmortizacion: 12,
+      estrategia: 'reducirCuota',
+    });
+
+    // Nueva cuota debe ser menor que la cuota original
+    expect(resultado.escenarioNuevo.cuota).toBeLessThan(
+      resultado.escenarioOriginal.cuota
+    );
+
+    // Mismo número de cuotas (reducimos cuota, no plazo)
+    expect(resultado.condicionesNuevas.numeroCuotas).toBe(12); // 12 cuotas restantes
+
+    // Ahorro en intereses debe ser positivo
+    expect(resultado.ahorro.intereses).toBeGreaterThan(0);
+
+    // Sin comisiones, TAE es la misma (depende solo de TIN y frecuencia)
+    // La TAE solo cambia cuando hay comisiones o cambia el TIN
+    expect(resultado.escenarioNuevo.tae).toBeCloseTo(
+      resultado.escenarioOriginal.tae,
+      4
+    );
+
+    // Debe indicar reducción de cuota
+    expect(resultado.ahorro.reduccionCuota).toBeGreaterThan(0);
+    expect(resultado.ahorro.cuotasEliminadas).toBeUndefined();
+  });
+
+  /**
+   * AP2 · Reducir plazo - validar cuotas eliminadas y ahorro
+   *
+   * Préstamo: 10000€, 24 meses, 6% TIN
+   * Amortizar 2000€ en mes 12 con estrategia reducirPlazo
+   */
+  it('AP2: Reducir plazo - validar cuotas eliminadas y ahorro', () => {
+    const condiciones: Condiciones = {
+      importe: 10000,
+      numeroCuotas: 24,
+      frecuencia: 'mensual',
+      tin: 0.06,
+      comisiones: [],
+    };
+
+    const resultado = simularAmortizacionParcial({
+      condicionesOriginales: condiciones,
+      capitalAmortizado: 2000,
+      cuotaAmortizacion: 12,
+      estrategia: 'reducirPlazo',
+    });
+
+    // Cuota nueva debe estar cercana a la original
+    // (no puede ser exacta con número entero de cuotas)
+    const diferenciaCuota = Math.abs(
+      resultado.escenarioNuevo.cuota - resultado.escenarioOriginal.cuota
+    );
+    expect(diferenciaCuota).toBeLessThan(20); // Tolerancia de 20€
+
+    // Número de cuotas nuevo debe ser menor que el restante
+    expect(resultado.condicionesNuevas.numeroCuotas).toBeLessThan(12);
+
+    // Debe haber cuotas eliminadas
+    expect(resultado.ahorro.cuotasEliminadas).toBeGreaterThan(0);
+    expect(resultado.ahorro.reduccionCuota).toBeUndefined();
+
+    // Ahorro en intereses debe ser positivo
+    expect(resultado.ahorro.intereses).toBeGreaterThan(0);
+  });
+
+  /**
+   * AP3 · Capital pendiente correcto después de amortización
+   *
+   * Validar que el capital pendiente inicial del escenario nuevo
+   * = capital pendiente del original en cuota de amortización - cantidad amortizada
+   */
+  it('AP3: Capital pendiente correcto en nueva tabla', () => {
+    const condiciones: Condiciones = {
+      importe: 10000,
+      numeroCuotas: 24,
+      frecuencia: 'mensual',
+      tin: 0.06,
+      comisiones: [],
+    };
+
+    // Primero calcular el escenario original para obtener el capital pendiente
+    const resultadoOriginal = calcular(condiciones, { incluirCuadro: true });
+    const cuotaAmortizacion = 12;
+    const capitalAmortizado = 2000;
+
+    // Capital pendiente en la cuota de amortización
+    const capitalPendienteOriginal =
+      resultadoOriginal.cuadro![cuotaAmortizacion - 1]!.capitalPendiente;
+
+    // Simular amortización
+    const resultado = simularAmortizacionParcial({
+      condicionesOriginales: condiciones,
+      capitalAmortizado,
+      cuotaAmortizacion,
+      estrategia: 'reducirCuota',
+    });
+
+    // El nuevo importe debe ser capital pendiente - capital amortizado
+    const nuevoImporteEsperado = capitalPendienteOriginal - capitalAmortizado;
+    expect(resultado.condicionesNuevas.importe).toBeCloseTo(
+      nuevoImporteEsperado,
+      2
+    );
+  });
+
+  /**
+   * AP4 · Amortización total - debe terminar préstamo
+   *
+   * Si amortizan todo el capital pendiente, cuotas restantes = 0
+   */
+  it('AP4: Amortización total elimina todas las cuotas restantes', () => {
+    const condiciones: Condiciones = {
+      importe: 10000,
+      numeroCuotas: 24,
+      frecuencia: 'mensual',
+      tin: 0.06,
+      comisiones: [],
+    };
+
+    // Calcular el capital pendiente en la cuota 12
+    const resultadoOriginal = calcular(condiciones, { incluirCuadro: true });
+    const cuotaAmortizacion = 12;
+    const capitalPendiente =
+      resultadoOriginal.cuadro![cuotaAmortizacion - 1]!.capitalPendiente;
+
+    // Amortizar TODO el capital pendiente
+    const resultado = simularAmortizacionParcial({
+      condicionesOriginales: condiciones,
+      capitalAmortizado: capitalPendiente,
+      cuotaAmortizacion,
+      estrategia: 'reducirPlazo',
+    });
+
+    // No debe haber más cuotas
+    expect(resultado.condicionesNuevas.numeroCuotas).toBe(0);
+
+    // Coste financiero nuevo debe ser 0
+    expect(resultado.escenarioNuevo.costeFinanciero).toBeCloseTo(0, 2);
+  });
+
+  /**
+   * AP5 · Con comisiones - validar TAE
+   *
+   * El escenario original tiene comisiones
+   * El escenario nuevo NO debe tener comisiones
+   * Validar que TAE se recalcula correctamente
+   */
+  it('AP5: Amortización parcial con comisiones en original', () => {
+    const condiciones: Condiciones = {
+      importe: 10000,
+      numeroCuotas: 24,
+      frecuencia: 'mensual',
+      tin: 0.06,
+      comisiones: [
+        {
+          descripcion: 'Comisión de apertura',
+          importe: 200,
+          momento: 'primeraCuota',
+        },
+      ],
+    };
+
+    const resultado = simularAmortizacionParcial({
+      condicionesOriginales: condiciones,
+      capitalAmortizado: 2000,
+      cuotaAmortizacion: 12,
+      estrategia: 'reducirCuota',
+    });
+
+    // El escenario nuevo NO debe tener comisiones
+    expect(resultado.condicionesNuevas.comisiones).toHaveLength(0);
+
+    // TAE del escenario nuevo debe ser más baja que la original
+    // porque no tiene comisiones adicionales
+    expect(resultado.escenarioNuevo.tae).toBeLessThan(
+      resultado.escenarioOriginal.tae
+    );
+
+    // El ahorro en coste total debe incluir el ahorro de intereses
+    expect(resultado.ahorro.costeTotal).toBeGreaterThan(0);
   });
 });
