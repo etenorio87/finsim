@@ -8,7 +8,7 @@
  */
 
 import { useState } from 'react';
-import type { Resultado, Condiciones } from '../../core/types';
+import type { Resultado, Condiciones } from '@finsim/core';
 import { exportarExcel, exportarPDF } from '../utils/exportar';
 
 interface Props {

@@ -3,29 +3,14 @@
  */
 
 import { useState } from 'react';
-import type { Condiciones, Frecuencia } from '../../core/types';
+import type { Condiciones, Frecuencia } from '@finsim/core';
+import { parseDecimal } from '@finsim/core';
 
 interface Props {
   label: string;
   condiciones: Condiciones;
   onChange: (condiciones: Condiciones) => void;
   colorAccent?: 'primary' | 'accent';
-}
-
-/**
- * Normaliza separadores decimales: convierte coma a punto
- */
-function normalizarDecimal(valor: string): string {
-  return valor.replace(',', '.');
-}
-
-/**
- * Parsea un string a número aceptando coma o punto como separador decimal
- */
-function parseDecimal(valor: string): number {
-  const normalizado = normalizarDecimal(valor);
-  const numero = parseFloat(normalizado);
-  return isNaN(numero) ? 0 : numero;
 }
 
 export default function FormularioCondiciones({

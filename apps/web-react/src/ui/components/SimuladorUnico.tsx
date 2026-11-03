@@ -7,8 +7,8 @@
  */
 
 import { useState } from 'react';
-import type { Condiciones } from '../../core/types';
-import { calcular } from '../../core/motor';
+import type { Condiciones } from '@finsim/core';
+import { calcular } from '@finsim/core';
 import FormularioCondiciones from './FormularioCondiciones';
 import ResultadoFinanciacion from './ResultadoFinanciacion';
 import AmortizacionParcial from './AmortizacionParcial';
