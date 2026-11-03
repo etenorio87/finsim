@@ -128,6 +128,30 @@ describe('AmortizacionParcialStore', () => {
     expect(store.error()).toBe('La cuota debe estar entre 1 y 24');
   });
 
+  it('si cambia el préstamo de origen, conserva lo escrito y el estado de simulación', () => {
+    const store = crear(AmortizacionParcialStore);
+    store.abrir(origen);
+    store.formulario()!.controls.capitalAmortizado.setValue(2000);
+    store.simular();
+
+    const condiciones12 = { ...CONDICIONES_SIMULADOR, numeroCuotas: 12 };
+    store.abrir({ condiciones: condiciones12, resultado: calcular(condiciones12, { incluirCuadro: true }) });
+
+    expect(store.formulario()!.controls.capitalAmortizado.value).toBe(2000);
+    expect(store.resultado()?.escenarioOriginal.cuadro).toHaveLength(12);
+  });
+
+  it('al cerrar y volver a abrir empieza de cero', () => {
+    const store = crear(AmortizacionParcialStore);
+    store.abrir(origen);
+    store.formulario()!.controls.capitalAmortizado.setValue(2000);
+    store.simular();
+    store.cerrar();
+    store.abrir(origen);
+    expect(store.formulario()!.controls.capitalAmortizado.value).toBe(1000);
+    expect(store.resultado()).toBeNull();
+  });
+
   it('el error no aparece antes de pulsar "Simular"', () => {
     const store = crear(AmortizacionParcialStore);
     store.abrir(origen);

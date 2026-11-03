@@ -26,8 +26,8 @@ FinSim está **migrando de una web React a una plataforma Angular multiplataform
 |---|---|---|
 | Motor de cálculo `@finsim/core` | TypeScript puro | ✅ Estable, 37 tests |
 | Web v1 `@finsim/web-react` | React 19 | ✅ En producción, se sustituirá por la web Angular |
-| Capa compartida `@finsim/shared` | Angular 22 | ✅ Lista, 43 tests; la usarán las apps Angular |
-| Web v2 `apps/web` | Angular 22 | 🚧 Siguiente fase |
+| Capa compartida `@finsim/shared` | Angular 22 | ✅ Lista, 45 tests; la usarán las apps Angular |
+| Web v2 `@finsim/web` | Angular 22 + Tailwind v4 | ✅ Completa, 8 tests; se publicará en la Fase 3 |
 | App móvil `apps/mobile` | NativeScript + Angular | 📋 Planificada |
 
 La versión React original queda etiquetada como [`v1-react`](https://github.com/etenorio87/finsim/tree/v1-react).
@@ -49,8 +49,8 @@ flowchart TD
 
     classDef actual fill:#d1fae5,stroke:#059669
     classDef previsto fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray:4
-    class core,react,shared actual
-    class web,mobile previsto
+    class core,react,shared,web actual
+    class mobile previsto
 ```
 
 - **`@finsim/core`** concentra toda la lógica financiera. No depende de ningún framework ni del navegador; se comprueba compilándolo sin la librería DOM.
@@ -95,7 +95,8 @@ Requisitos: Node.js 20.19+ (recomendado 24).
 
 ```bash
 npm install          # instalar dependencias (desde la raíz)
-npm run dev          # web en desarrollo → http://localhost:5173/finsim/
+npm run dev          # web React (en producción) → http://localhost:5173/finsim/
+npm run dev:web      # web Angular → http://localhost:4200/
 npm test             # tests de todos los proyectos (con caché de Nx)
 npm run typecheck    # comprobación de tipos
 npm run build        # build de todos los proyectos
@@ -104,6 +105,7 @@ npm run ejemplo      # ejemplo del motor por consola
 # Tareas de un proyecto concreto
 npx nx run @finsim/core:test
 npx nx run @finsim/shared:test
+npx nx run @finsim/web:build
 npx nx run @finsim/web-react:build
 ```
 
@@ -131,6 +133,11 @@ finsim/
 │           ├── exportacion/         # Excel/PDF como bytes + destino por plataforma
 │           └── textos/              # Etiquetas y mensajes
 ├── apps/
+│   ├── web/                     # @finsim/web — web v2 (Angular), pendiente de publicar
+│   │   └── src/app/
+│   │       ├── paginas/             # simulador, comparador, contado, amortización parcial
+│   │       ├── ui/                  # campo decimal, formulario de condiciones, tarjeta de resultado
+│   │       └── plataforma/          # descarga de archivos en el navegador
 │   └── web-react/               # @finsim/web-react — web v1 en producción
 ├── .github/workflows/
 │   ├── ci.yml                   # test + typecheck + build en cada PR
@@ -142,7 +149,7 @@ finsim/
 
 - [x] **Fase 0** — Monorepo Nx y extracción de `@finsim/core`
 - [x] **Fase 1** — `libs/shared`: estado, formularios, pipes y exportación en Angular
-- [ ] **Fase 2** — `apps/web`: web Angular con las cuatro funcionalidades
+- [x] **Fase 2** — `apps/web`: web Angular con las cuatro funcionalidades
 - [ ] **Fase 3** — Verificación de paridad con la web React y cambio del despliegue
 - [ ] **Fase 4** — Prueba técnica de NativeScript (exportación y compartir archivos)
 - [ ] **Fase 5** — `apps/mobile`: app nativa sobre `libs/shared`

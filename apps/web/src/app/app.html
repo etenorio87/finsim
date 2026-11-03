@@ -1,0 +1,40 @@
+<div class="min-h-screen bg-background">
+  <header class="bg-white shadow-soft border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-4 py-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center" aria-hidden="true">
+          <span class="text-white text-xl font-bold">%</span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-secondary">Simulador de Financiación</h1>
+          <p class="text-sm text-gray-600">Decisiones inteligentes, no solo cuotas bajas</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="max-w-6xl mx-auto px-4 py-6" aria-label="Vistas del simulador">
+    <div class="bg-white rounded-2xl p-1.5 shadow-soft flex sm:inline-flex gap-1 overflow-x-auto">
+      @for (vista of vistas; track vista.ruta) {
+        <a [routerLink]="vista.ruta" routerLinkActive="bg-secondary text-white shadow-lg sm:scale-105"
+          [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page"
+          class="py-3 px-4 sm:px-6 rounded-xl font-medium whitespace-nowrap transition-all duration-200 text-gray-600 hover:text-secondary hover:bg-gray-50">
+          {{ vista.etiqueta }}
+        </a>
+      }
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 pb-12">
+    <router-outlet />
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-4 py-8 mt-12 border-t border-gray-200">
+    <div class="text-center">
+      <p class="text-gray-500 text-sm">
+        💡 El precio del dinero es la <strong class="text-primary">TAE</strong>, no la cuota mensual
+      </p>
+      <p class="text-gray-400 text-xs mt-2">Herramienta de decisión financiera · Datos no persistidos</p>
+    </div>
+  </footer>
+</div>

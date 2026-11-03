@@ -1,0 +1,78 @@
+@let form = formulario();
+@let c = form.controls;
+<div class="space-y-5" [formGroup]="form">
+  <div class="flex items-center gap-2 pb-3 border-b-2" [class]="estilos().borde">
+    <div
+      class="w-8 h-8 rounded-lg bg-gradient-to-br to-transparent border-2 flex items-center justify-center"
+      [class]="estilos().degradado + ' ' + estilos().borde"
+    >
+      <span class="font-bold" [class]="estilos().texto">{{ letra() }}</span>
+    </div>
+    <h3 class="font-bold text-lg text-secondary">{{ titulo() }}</h3>
+  </div>
+
+  <div>
+    <label [for]="id + '-importe'" class="block text-sm font-medium text-gray-700 mb-2">Importe (€)</label>
+    <fs-campo-decimal formControlName="importe" modo="importe" placeholder="10000"
+      [idCampo]="id + '-importe'" [invalido]="!!error(c.importe)" />
+    @if (error(c.importe); as e) { <p class="text-xs text-negative mt-1">{{ e }}</p> }
+  </div>
+
+  <div>
+    <label [for]="id + '-cuotas'" class="block text-sm font-medium text-gray-700 mb-2">Número de cuotas</label>
+    <fs-campo-decimal formControlName="numeroCuotas" modo="entero" placeholder="24"
+      [idCampo]="id + '-cuotas'" [invalido]="!!error(c.numeroCuotas)" />
+    @if (error(c.numeroCuotas); as e) { <p class="text-xs text-negative mt-1">{{ e }}</p> }
+  </div>
+
+  <div>
+    <label [for]="id + '-frecuencia'" class="block text-sm font-medium text-gray-700 mb-2">Frecuencia</label>
+    <select [id]="id + '-frecuencia'" formControlName="frecuencia"
+      class="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-secondary transition-all">
+      @for (f of frecuencias; track f.valor) {
+        <option [value]="f.valor">{{ f.etiqueta }}</option>
+      }
+    </select>
+  </div>
+
+  <div>
+    <label [for]="id + '-tin'" class="block text-sm font-medium text-gray-700 mb-2">TIN anual (%)</label>
+    <fs-campo-decimal formControlName="tin" modo="porcentaje" placeholder="5,45"
+      [idCampo]="id + '-tin'" [invalido]="!!error(c.tin)" />
+    @if (error(c.tin); as e) {
+      <p class="text-xs text-negative mt-1">{{ e }}</p>
+    } @else {
+      <p class="text-xs text-gray-500 mt-2">Escribe 0 para "sin intereses"</p>
+    }
+  </div>
+
+  <div formArrayName="comisiones">
+    <span class="block text-sm font-medium text-gray-700 mb-3">Comisiones (opcional)</span>
+
+    @for (comision of c.comisiones.controls; track comision; let i = $index) {
+      <div class="bg-gray-50 rounded-xl p-4 mb-3 border border-gray-200 space-y-3" [formGroupName]="i">
+        <div class="flex justify-between items-center">
+          <input type="text" formControlName="descripcion" placeholder="Descripción" aria-label="Descripción de la comisión"
+            class="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 mr-2" />
+          <button type="button" (click)="eliminarComision(i)" aria-label="Eliminar comisión"
+            class="text-negative hover:bg-negative/10 rounded-lg px-3 py-2 text-sm font-medium transition-colors">✕</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <fs-campo-decimal formControlName="importe" modo="importe" placeholder="Importe (€)" [compacto]="true"
+            [invalido]="!!error(comision.controls.importe)" />
+          <select formControlName="momento" aria-label="Momento de cobro de la comisión"
+            class="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm">
+            @for (m of momentos; track m.valor) {
+              <option [value]="m.valor">{{ m.etiqueta }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    }
+
+    <button type="button" (click)="anadirComision()"
+      class="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1">
+      <span class="text-lg">+</span> Añadir comisión
+    </button>
+  </div>
+</div>

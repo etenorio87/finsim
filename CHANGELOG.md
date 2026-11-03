@@ -2,6 +2,16 @@
 
 ## Migración a plataforma Angular
 
+### 03/11/2026 — Fase 2: web Angular
+
+- Nueva app `@finsim/web` (Angular 22, zoneless, esbuild, Tailwind v4) con las cuatro funcionalidades de la v1 sobre `@finsim/shared`
+- Cada vista tiene su URL (`/simular`, `/comparar`, `/contado`) y su título
+- Carga inicial de 88 kB transferidos (la v1, 302 kB): cada pantalla y las librerías de exportación se cargan bajo demanda
+- Sombras del diseño (`shadow-soft`, `shadow-card`, `shadow-hover`) definidas en `@theme`: en la v1 estaban en `tailwind.config.js`, que Tailwind v4 no lee, y nunca se aplicaron
+- Mejoras de accesibilidad: etiquetas asociadas a sus campos, `aria-expanded` en el cuadro, `aria-current` en la navegación
+- Si cambia el préstamo con el panel de amortización parcial abierto, se conserva lo escrito
+- Herramientas de build: Vite 8.2.2 → 8.3.5 (requisito de `@angular/build`; corrige una vulnerabilidad alta de Vite)
+
 ### 03/11/2026 — Corrección: aviso de plazos distintos
 
 - **El aviso compara la duración, no el número de cuotas.** Antes, 12 cuotas mensuales (1 año) frente a 12 anuales (12 años) no avisaban, y 24 mensuales frente a 8 trimestrales (2 años las dos) sí. Afecta también a la web en producción. Tests T6c y T6d; especificación aclarada en §5 y T6
