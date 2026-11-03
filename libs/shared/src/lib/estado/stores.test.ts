@@ -68,7 +68,20 @@ describe('ComparadorStore', () => {
     store.comparar();
     expect(store.comparacion()?.avisoPlazosDistintos).toBe(true);
     expect(store.titulo()).toMatch(/^💰 Dinero más barato/);
-    expect(store.avisoPlazos()).toContain('Son decisiones distintas');
+    // A (6 %, 24 cuotas) es más barata y más corta que B (8 %, 60 cuotas)
+    expect(store.avisoPlazos()).toBe('A es dinero más barato y además terminas 3 años antes.');
+  });
+
+  it('si la más barata es la más larga, avisa de cuánto tiempo más estarás endeudado (#5)', () => {
+    const store = crear(ComparadorStore);
+    store.formularioA.controls.numeroCuotas.setValue(12);
+    store.formularioB.controls.numeroCuotas.setValue(60);
+    store.formularioB.controls.tin.setValue(0.02);
+    store.comparar();
+    expect(store.avisoPlazos()).toBe(
+      'Son decisiones distintas: B es dinero más barato, pero estarás endeudado 4 años más. ' +
+        'Depende de qué hagas con la liquidez que liberas.',
+    );
   });
 });
 

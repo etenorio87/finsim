@@ -42,7 +42,7 @@ export class ComparadorStore {
 
   readonly avisoPlazos = computed(() => {
     const c = this.comparacion();
-    return c?.avisoPlazosDistintos ? textoAvisoPlazos(c) : null;
+    return c?.avisoPlazosDistintos ? textoAvisoPlazos(c, this.condicionesA(), this.condicionesB()) : null;
   });
 
   comparar(): void {
