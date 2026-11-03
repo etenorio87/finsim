@@ -3,7 +3,6 @@ import type { ComparacionFinanciaciones, Condiciones } from '@finsim/core';
 import {
   OPCIONES_FRECUENCIA,
   TEXTO_PERIODO,
-  duracionEnMeses,
   formatearDuracion,
   tituloComparacion,
   textoAvisoPlazos,
@@ -37,13 +36,7 @@ describe('textos', () => {
 
 });
 
-describe('duración de un préstamo', () => {
-  it('en meses según la frecuencia', () => {
-    expect(duracionEnMeses(cond(24))).toBe(24);
-    expect(duracionEnMeses(cond(8, 'trimestral'))).toBe(24);
-    expect(duracionEnMeses(cond(5, 'anual'))).toBe(60);
-  });
-
+describe('formatearDuracion', () => {
   it('formato legible con plurales', () => {
     expect(formatearDuracion(48)).toBe('4 años');
     expect(formatearDuracion(12)).toBe('1 año');
@@ -73,9 +66,7 @@ describe('aviso de plazos distintos', () => {
     );
   });
 
-  it('distinto número de cuotas pero misma duración → solo cambia la frecuencia', () => {
-    expect(textoAvisoPlazos(aviso('a'), cond(24), cond(8, 'trimestral'))).toBe(
-      'A es dinero más barato. Las dos duran lo mismo (2 años); solo cambia la frecuencia de pago.',
-    );
+  it('las dos ofertas duran lo mismo → sin texto de aviso', () => {
+    expect(textoAvisoPlazos(aviso('a'), cond(24), cond(8, 'trimestral'))).toBeNull();
   });
 });
