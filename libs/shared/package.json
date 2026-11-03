@@ -1,0 +1,29 @@
+{
+  "name": "@finsim/shared",
+  "version": "1.0.0",
+  "description": "Capa de presentación compartida (Angular) entre la web y la app móvil de FinSim: estado, formularios, pipes y exportación. Sin dependencias de DOM.",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "build": "ngc -p tsconfig.aot.json"
+  },
+  "dependencies": {
+    "@finsim/core": "*"
+  },
+  "peerDependencies": {
+    "@angular/core": "~22.2.0",
+    "@angular/forms": "~22.2.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "rxjs": "~7.8.0",
+    "xlsx": "^0.18.5"
+  },
+  "license": "MIT"
+}
