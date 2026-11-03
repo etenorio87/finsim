@@ -1,4 +1,7 @@
-# FinSim - Simulador Financiero
+# FinSim — Simulador Financiero
+
+[![CI](https://github.com/etenorio87/finsim/actions/workflows/ci.yml/badge.svg)](https://github.com/etenorio87/finsim/actions/workflows/ci.yml)
+[![Deploy](https://github.com/etenorio87/finsim/actions/workflows/deploy.yml/badge.svg)](https://github.com/etenorio87/finsim/actions/workflows/deploy.yml)
 
 Herramienta de decisión para evaluar financiaciones con el móvil en la mano. Calcula el **precio real del dinero (TAE)**, compara ofertas y ayuda a decidir entre financiar o pagar al contado.
 
@@ -6,211 +9,143 @@ Herramienta de decisión para evaluar financiaciones con el móvil en la mano. C
 
 ## Propósito
 
-Responder, con el móvil en la mano y en una tienda, a cuatro preguntas:
+Responder, en una tienda y en segundos, a cuatro preguntas:
 
-1. **¿Cuánto me cuesta realmente esta financiación?** (TAE real, coste total, tabla de amortización)
-2. **¿Cuál de estas dos ofertas es mejor?** (comparación por TAE, no por cuota)
-3. **¿Me conviene financiar o pagar al contado?** (si tengo dinero rindiendo)
-4. **¿Cuánto ahorro si amortizo anticipadamente?** (comparación de estrategias: reducir cuota vs reducir plazo)
+1. **¿Cuánto me cuesta realmente esta financiación?** TAE real, coste total, cuadro de amortización
+2. **¿Cuál de estas dos ofertas es mejor?** Comparación por TAE, no por cuota
+3. **¿Me conviene financiar o pagar al contado?** Si tengo el dinero rindiendo
+4. **¿Cuánto ahorro si amortizo anticipadamente?** Reducir cuota frente a reducir plazo
 
-No es una calculadora genérica de préstamos. Es una herramienta de decisión que protege al usuario del sesgo comercial de comparar solo las cuotas mensuales.
+No es una calculadora genérica de préstamos: es una herramienta que **protege al usuario del sesgo comercial** de comparar solo las cuotas mensuales.
+
+## Estado del proyecto
+
+FinSim está **migrando de una web React a una plataforma Angular multiplataforma**: un único motor de cálculo compartido por una web y una app móvil nativa.
+
+| Componente | Tecnología | Estado |
+|---|---|---|
+| Motor de cálculo `@finsim/core` | TypeScript puro | ✅ Estable, 34 tests |
+| Web v1 `@finsim/web-react` | React 19 | ✅ En producción, se sustituirá por la web Angular |
+| Capa compartida `libs/shared` | Angular | 🚧 En desarrollo |
+| Web v2 `apps/web` | Angular | 📋 Planificada |
+| App móvil `apps/mobile` | NativeScript + Angular | 📋 Planificada |
+
+La versión React original queda etiquetada como [`v1-react`](https://github.com/etenorio87/finsim/tree/v1-react).
+
+## Arquitectura
+
+```mermaid
+flowchart TD
+    core["@finsim/core<br/>motor de cálculo · TypeScript puro, sin DOM"]
+    shared["libs/shared<br/>servicios, formularios, pipes, exportación · Angular"]
+    react["apps/web-react<br/>web v1 · React"]
+    web["apps/web<br/>web v2 · Angular + Tailwind"]
+    mobile["apps/mobile<br/>iOS / Android · NativeScript + Angular"]
+
+    core --> react
+    core --> shared
+    shared --> web
+    shared --> mobile
+
+    classDef actual fill:#d1fae5,stroke:#059669
+    classDef previsto fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray:4
+    class core,react actual
+    class shared,web,mobile previsto
+```
+
+- **`@finsim/core`** concentra toda la lógica financiera. No depende de ningún framework ni del navegador; se comprueba compilándolo sin la librería DOM.
+- **`libs/shared`** compartirá entre web y móvil todo lo que no es una plantilla: estado, formularios y validadores, pipes y generación de exportaciones.
+- Cada aplicación aporta **solo sus vistas**: HTML + Tailwind en la web y elementos nativos en el móvil.
+
+## Principios de diseño
+
+- **Tipos en decimal dentro del dominio.** Se guarda `0.0545`, no `5.45`; el formato `"5,45 %"` solo existe en la presentación. Mezclar ambas representaciones produce errores que no fallan: devuelven números plausibles pero incorrectos.
+- **Nada se persiste.** El cuadro de amortización se deriva siempre de las condiciones, así nunca hay un cuadro que no les corresponda.
+- **TAE real, comisiones incluidas.** Se calcula por búsqueda iterativa y se valida contra documentos reales (BBVA, Cetelem).
+- **Jerarquía visual intencionada.** TAE grande, cuota mediana, coste total pequeño: la cuota baja es el argumento comercial y la TAE es el precio.
+
+El contrato completo está en [ESPECIFICACION.md](ESPECIFICACION.md).
+
+## Funcionalidades
+
+- **Simular financiación**: TAE, cuota, coste total, saldo medio y cuadro de amortización exportable a Excel y PDF
+- **Comparar ofertas**: ganadora por TAE, con aviso cuando los plazos difieren ("Dinero más barato" en lugar de "Mejor oferta")
+- **¿Financiar o contado?**: compara la TAE con la rentabilidad neta de impuestos de tu inversión
+- **Amortización parcial**: reducir cuota frente a reducir plazo, con cuadro de ahorros y comparación antes/después
+- **Entrada pensada para móvil**: acepta coma y punto decimales; texto libre al escribir y formato al salir del campo
+
+Casos de uso paso a paso en [USAGE.md](USAGE.md).
 
 ## Tecnologías
 
-- **React 19** + **TypeScript** - Interfaz de usuario
-- **Vite 8** - Build tool y dev server
-- **Tailwind CSS v4** - Estilos
-- **Vitest** - Testing framework
-- **Nx** + npm workspaces - Monorepo
-- **GitHub Pages** - Hosting estático
-- **GitHub Actions** - CI/CD
+| Área | Actual | Prevista |
+|---|---|---|
+| Monorepo | Nx + npm workspaces | — |
+| Lenguaje | TypeScript | — |
+| Web | React 19, Vite, Tailwind CSS v4 | Angular, Tailwind CSS v4 |
+| Móvil | — | NativeScript + Angular (iOS y Android) |
+| Exportación | SheetJS (`xlsx`), jsPDF | — |
+| Tests | Vitest | — |
+| CI/CD | GitHub Actions, GitHub Pages | Builds de iOS y Android |
 
 ## Desarrollo
 
-Monorepo con **npm workspaces + Nx**:
+Requisitos: Node.js 20.19+ (recomendado 24).
 
 ```bash
-# Instalar dependencias (desde la raíz)
-npm install
-
-# Web en desarrollo con hot reload
-npm run dev
-# Abre http://localhost:5173/finsim/
-
-# Tests de todos los proyectos (con caché de Nx)
-npm test
-
-# Typecheck y build de todos los proyectos
-npm run typecheck
-npm run build
-
-# Ejecutar ejemplo del motor (CLI)
-npm run ejemplo
+npm install          # instalar dependencias (desde la raíz)
+npm run dev          # web en desarrollo → http://localhost:5173/finsim/
+npm test             # tests de todos los proyectos (con caché de Nx)
+npm run typecheck    # comprobación de tipos
+npm run build        # build de todos los proyectos
+npm run ejemplo      # ejemplo del motor por consola
 
 # Tareas de un proyecto concreto
 npx nx run @finsim/core:test
 npx nx run @finsim/web-react:build
 ```
 
-## Características
-
-### ✅ Motor de cálculo
-- Amortización francesa con funciones puras
-- Cálculo preciso de TAE real (incluye comisiones)
-- Manejo de comisiones en dos momentos: primera cuota o descontada del importe
-- **Simulación de amortización parcial** con dos estrategias:
-  - Reducir cuota: mantiene plazo, reduce pago mensual
-  - Reducir plazo: mantiene cuota similar, termina antes
-- 26 tests de aceptación validados contra documentos reales (BBVA, Cetelem)
-
-### 🎨 Interfaz (3 vistas + 1 funcionalidad adicional)
-
-#### 1. **Simular financiación** (vista por defecto)
-Evalúa una oferta de financiación:
-- TAE (precio real del dinero)
-- Cuota mensual y coste total
-- Tabla completa de amortización
-- Saldo medio durante la vida del préstamo
-- **Botón "Simular amortización parcial"** para explorar opciones de pago anticipado
-
-#### 2. **Comparar ofertas**
-Compara dos financiaciones:
-- Ganadora por TAE (no por cuota baja)
-- Aviso especial cuando los plazos difieren
-- "Dinero más barato" vs "Mejor oferta" según contexto
-- Detalle completo de ambas opciones
-
-#### 3. **¿Financiar o contado?**
-Decisión basada en rentabilidad de inversión:
-- Compara TAE vs rentabilidad neta (después de impuestos)
-- Regla: financiar solo si TAE < rentabilidad neta
-- Cálculo de oportunidad con tu dinero invertido
-
-#### 4. **Amortización parcial** (dentro de "Simular financiación")
-Simula el efecto de amortizar anticipadamente:
-- **Dos estrategias**: Reducir cuota o Reducir plazo
-- Cuadro de ahorros: intereses, coste total, reducción de TAE
-- Comparación lado a lado: situación actual vs después de amortizar
-- Pedagogía: explica cuándo conviene cada estrategia
-- Exportación a Excel/PDF de la comparación
-
-### 🎯 Protecciones
-- **Mobile-first**: diseñada para usar en tienda con el móvil
-- **Jerarquía correcta**: TAE grande → Cuota mediana → Coste total pequeño
-- **Acepta coma y punto** como separadores decimales
-- **Formateo inteligente**: texto libre mientras escribes, formato al salir del campo
-- **Protección contra sesgo comercial**: evita elegir solo por cuota baja
-
-## Novedades (11/09/2026)
-
-### ✨ Amortización Parcial
-Nueva funcionalidad que permite simular el efecto de amortizar anticipadamente parte de un préstamo:
-
-**Características**:
-- **Dos estrategias optimizadas**:
-  - **Reducir cuota**: Mantiene el mismo plazo pero reduce el pago mensual (libera liquidez)
-  - **Reducir plazo**: Mantiene una cuota similar pero termina antes (minimiza intereses)
-- **Algoritmo inteligente**: Búsqueda óptima del número de cuotas para mantener la cuota lo más cercana posible a la original en estrategia "reducir plazo"
-- **Comparación visual lado a lado**: Situación actual vs después de amortizar
-- **Cuadro de ahorros destacado**:
-  - Ahorro en intereses
-  - Ahorro en coste total
-  - Reducción de TAE
-  - Reducción de cuota (solo estrategia reducir cuota)
-  - Cuotas eliminadas (solo estrategia reducir plazo)
-- **Pedagogía financiera**: Explica cuándo conviene cada estrategia
-- **5 nuevos tests** (AP1-AP5) que validan ambas estrategias y casos edge
-
-**Implementación técnica**:
-- Archivo core: `amortizacionParcial.ts` (~230 líneas)
-- Componente UI: `AmortizacionParcial.tsx` (~260 líneas)
-- Integrado en `SimuladorUnico.tsx` con botón expandible
-- Reutiliza funciones existentes del motor (`calcularCuota()`, `calcular()`)
-- Usa fórmula matemática directa para calcular número de cuotas óptimo
-
-## Correcciones (28-29/08/2026)
-
-### Issues bloqueantes resueltos
-- **#1**: Campo TIN no admitía decimales ni dos cifras
-  - ✅ Texto libre mientras escribes, formato al salir del campo
-  - ✅ Test de regresión: `14,95` → `tin === 0.1495`
-- **#2**: Campo Importe rechazaba punto decimal
-  - ✅ Acepta coma Y punto como separadores
-  - ✅ Test de regresión: `9854.64` → `importe === 9854.64`
-
-### Correcciones técnicas
-- **#3**: Test T2 con tolerancia relajada que ocultaba descuadre
-  - ✅ Valor esperado corregido: `0.0669` → `0.0686`
-  - ✅ Modelo `primeraCuota` validado contra Cetelem real
-- **#4**: Discrepancia de 3 céntimos en la cuota
-  - ✅ Test de regresión T-REG-4 agregado
-  - ✅ Resuelto con corrección de #2
-
-### Mejoras de UX
-- **#5**: "Mejor oferta" demasiado rotundo con plazos distintos
-  - ✅ Cambiado a "Dinero más barato" cuando plazos difieren
-  - ✅ Explicación: "Son decisiones distintas, depende de qué hagas con la liquidez"
-
 ## Estructura
 
 ```
 finsim/
 ├── libs/
-│   └── core/                  # @finsim/core — motor de cálculo (funciones puras, sin DOM)
+│   └── core/                    # @finsim/core — motor de cálculo
 │       └── src/
-│           ├── index.ts               # API pública del paquete
-│           ├── types.ts
-│           ├── amortizacion.ts
-│           ├── motor.ts
-│           ├── comparadores.ts
-│           ├── amortizacionParcial.ts # Lógica de amortización parcial
-│           ├── formato.ts             # Parseo y formato compartidos por todas las interfaces
-│           └── *.test.ts              # 34 tests, todos pasan
+│           ├── index.ts             # API pública
+│           ├── types.ts             # Contrato del dominio
+│           ├── motor.ts             # Cuota, cuadro y TAE
+│           ├── amortizacion.ts      # Primitivas de amortización francesa
+│           ├── comparadores.ts      # Oferta A vs B, financiar vs contado
+│           ├── amortizacionParcial.ts
+│           ├── formato.ts           # Parseo y formato compartidos por las interfaces
+│           └── *.test.ts
 ├── apps/
-│   └── web-react/             # @finsim/web-react — web actual (React), desplegada en GitHub Pages
-│       └── src/ui/
-│           ├── App.tsx
-│           ├── components/
-│           └── utils/exportar.ts      # Exportación a Excel/PDF
+│   └── web-react/               # @finsim/web-react — web v1 en producción
+├── .github/workflows/
+│   ├── ci.yml                   # test + typecheck + build en cada PR
+│   └── deploy.yml               # despliegue a GitHub Pages
 └── nx.json
 ```
 
-> **En migración**: la web React se sustituirá por una web Angular (`apps/web`) y se añadirá
-> la app móvil nativa con NativeScript + Angular (`apps/mobile`), ambas sobre `@finsim/core`.
-> La versión React original queda etiquetada como `v1-react`.
+## Hoja de ruta de la migración
 
-## Roadmap
+- [x] **Fase 0** — Monorepo Nx y extracción de `@finsim/core`
+- [ ] **Fase 1** — `libs/shared`: servicios, formularios, pipes y exportación en Angular
+- [ ] **Fase 2** — `apps/web`: web Angular con las cuatro funcionalidades
+- [ ] **Fase 3** — Verificación de paridad con la web React y cambio del despliegue
+- [ ] **Fase 4** — Prueba técnica de NativeScript (exportación y compartir archivos)
+- [ ] **Fase 5** — `apps/mobile`: app nativa sobre `libs/shared`
+- [ ] **Fase 6** — Pulido: iconos, splash, accesibilidad, pruebas en dispositivos
+- [ ] **Fase 7** — Publicación en App Store y Google Play
 
-- [x] Setup inicial
-- [x] **FASE 1**: Motor de cálculo + tests
-  - [x] Implementar cálculo de cuota
-  - [x] Implementar generación de cuadro
-  - [x] Implementar cálculo de TAE
-  - [x] Implementar comparadores
-  - [x] Implementar amortización parcial
-  - [x] Tests (T1-T6 + AP1-AP5) - 26/26 ✅
-- [x] **FASE 2**: Interfaz de usuario
-  - [x] Formulario de entrada mobile-first
-  - [x] Visualización de resultados con jerarquía correcta (§5)
-  - [x] Cuadro de amortización colapsable
-  - [x] Simulador de financiación única
-  - [x] Comparador de financiaciones
-  - [x] Comparador financiar vs contado
-  - [x] Simulador de amortización parcial (reducir cuota / reducir plazo)
-- [x] **FASE 3**: Correcciones y refinamiento
-  - [x] Corregir inputs de decimales (#1, #2)
-  - [x] Corregir tests y especificación (#3, #4)
-  - [x] Mejorar mensajes con plazos distintos (#5)
-- [x] **Despliegue en producción**
-  - [x] Configurar GitHub Actions
-  - [x] Desplegar en GitHub Pages
-  - [x] Tests de calidad
+El historial de cambios de la v1 está en [CHANGELOG.md](CHANGELOG.md).
 
 ## Despliegue
 
 - **Producción**: https://etenorio87.github.io/finsim/
-- **CI/CD**: GitHub Actions (build y deploy automático en cada push)
-- **Repositorio**: https://github.com/etenorio87/finsim
+- **CI**: cada pull request ejecuta tests, typecheck y build
+- **CD**: cada push a `main` que afecte a la web o al motor la despliega en GitHub Pages
 
 ## Licencia
 

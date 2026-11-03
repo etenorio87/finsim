@@ -2,7 +2,7 @@
 
 ## Interfaz web
 
-Abre la aplicación en tu navegador: [https://tu-usuario.github.io/simulador-financiacion/](https://tu-usuario.github.io/simulador-financiacion/)
+Abre la aplicación en tu navegador: [https://etenorio87.github.io/finsim/](https://etenorio87.github.io/finsim/)
 
 ### Caso 1: Comparar dos ofertas de financiación
 
@@ -42,7 +42,7 @@ Abre la aplicación en tu navegador: [https://tu-usuario.github.io/simulador-fin
 ## Uso del motor desde código
 
 ```typescript
-import { calcular, compararFinanciaciones, compararConContado } from './core';
+import { calcular, compararFinanciaciones, compararConContado } from '@finsim/core';
 
 // Calcular una financiación
 const resultado = calcular({
@@ -63,7 +63,7 @@ console.log(`TAE real: ${(resultado.tae * 100).toFixed(2)}%`);
 console.log(`Cuota: ${resultado.cuota.toFixed(2)} €`);
 ```
 
-Ver más ejemplos en `src/core/ejemplo.ts`.
+Ver más ejemplos en [`libs/core/src/ejemplo.ts`](libs/core/src/ejemplo.ts) (ejecutar con `npm run ejemplo`).
 
 ## Conceptos clave
 
@@ -102,7 +102,7 @@ Por eso la interfaz **avisa cuando los plazos difieren**.
 ## Datos técnicos
 
 - Motor: TypeScript puro, sin dependencias
-- Tests: 20/20 (casos reales validados)
+- Tests: 34/34 (casos reales validados + formato y parseo)
 - Precisión TAE: 10 decimales (búsqueda binaria)
 - Amortización: Sistema francés (cuota constante)
 
@@ -111,11 +111,11 @@ Por eso la interfaz **avisa cuando los plazos difieren**.
 El proyecto está configurado para GitHub Pages:
 
 ```bash
-# Build para producción
-npm run build
+# Build de la web
+npx nx run @finsim/web-react:build
 
-# Preview local
-npm run preview
+# Preview local del build
+npm run preview -w @finsim/web-react
 ```
 
-El workflow `.github/workflows/deploy.yml` se encarga del deploy automático al hacer push a `main`.
+El workflow `.github/workflows/deploy.yml` despliega automáticamente al hacer push a `main` cuando cambian la web o el motor.
