@@ -5,27 +5,8 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type { Resultado, Condiciones } from '../../core/types';
-
-/**
- * Formatea un número como moneda en euros
- */
-function formatearMoneda(valor: number): string {
-  return valor.toLocaleString('es-ES', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
-
-/**
- * Formatea un número como porcentaje
- */
-function formatearPorcentaje(valor: number): string {
-  return (valor * 100).toLocaleString('es-ES', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
+import type { Resultado, Condiciones } from '@finsim/core';
+import { formatearMoneda, formatearPorcentaje } from '@finsim/core';
 
 /**
  * Genera nombre de archivo descriptivo

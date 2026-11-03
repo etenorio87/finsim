@@ -1,7 +1,7 @@
 /**
  * Ejemplo de uso del motor de cálculo
  *
- * Ejecutar con: npx tsx src/core/ejemplo.ts
+ * Ejecutar con: npm run ejemplo -w @finsim/core
  */
 
 import { calcular } from './motor';

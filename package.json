@@ -1,15 +1,19 @@
 {
-  "name": "simulador-financiacion",
+  "name": "finsim",
   "version": "1.0.0",
-  "description": "Simulador de financiación - Herramienta de decisión para comparar ofertas de financiación",
+  "description": "FinSim - Simulador de financiación: motor de cálculo compartido + interfaces web y móvil",
+  "private": true,
   "type": "module",
+  "workspaces": [
+    "libs/*",
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "dev": "nx run @finsim/web-react:dev",
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
+    "typecheck": "nx run-many -t typecheck",
+    "ejemplo": "npm run ejemplo -w @finsim/core"
   },
   "keywords": [
     "financiacion",
@@ -19,25 +23,9 @@
   ],
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@vitejs/plugin-react": "^6.1.1",
-    "jspdf": "^4.2.1",
-    "jspdf-autotable": "^5.0.8",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "vite": "^8.2.2",
-    "xlsx": "^0.18.5"
-  },
   "devDependencies": {
-    "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.3",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.5",
-    "autoprefixer": "^10.5.4",
-    "jsdom": "^29.1.1",
-    "postcss": "^8.5.26",
-    "tailwindcss": "^4.3.3",
+    "@types/node": "^26.6.6",
+    "nx": "^24.0.3",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"

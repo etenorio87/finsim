@@ -21,33 +21,35 @@ No es una calculadora genérica de préstamos. Es una herramienta de decisión q
 - **Vite 8** - Build tool y dev server
 - **Tailwind CSS v4** - Estilos
 - **Vitest** - Testing framework
+- **Nx** + npm workspaces - Monorepo
 - **GitHub Pages** - Hosting estático
 - **GitHub Actions** - CI/CD
 
 ## Desarrollo
 
+Monorepo con **npm workspaces + Nx**:
+
 ```bash
-# Instalar dependencias
+# Instalar dependencias (desde la raíz)
 npm install
 
-# Desarrollo con hot reload
+# Web en desarrollo con hot reload
 npm run dev
 # Abre http://localhost:5173/finsim/
 
-# Ejecutar tests en modo watch
+# Tests de todos los proyectos (con caché de Nx)
 npm test
 
-# Ejecutar tests una vez
-npm run test:run
-
-# Build para producción
+# Typecheck y build de todos los proyectos
+npm run typecheck
 npm run build
 
-# Preview del build de producción
-npm run preview
-
 # Ejecutar ejemplo del motor (CLI)
-npx tsx src/core/ejemplo.ts
+npm run ejemplo
+
+# Tareas de un proyecto concreto
+npx nx run @finsim/core:test
+npx nx run @finsim/web-react:build
 ```
 
 ## Características
@@ -152,27 +154,30 @@ Nueva funcionalidad que permite simular el efecto de amortizar anticipadamente p
 ## Estructura
 
 ```
-src/
-├── core/           # Motor de cálculo (funciones puras, sin dependencias)
-│   ├── types.ts
-│   ├── amortizacion.ts
-│   ├── motor.ts
-│   ├── motor.test.ts          # 26 tests, todos pasan
-│   ├── comparadores.ts
-│   └── amortizacionParcial.ts # Lógica de amortización parcial
-├── ui/             # Interfaz React
-│   ├── App.tsx
-│   ├── components/
-│   │   ├── SimuladorUnico.tsx
-│   │   ├── ComparadorFinanciaciones.tsx
-│   │   ├── ComparadorContado.tsx
-│   │   ├── FormularioCondiciones.tsx
-│   │   ├── ResultadoFinanciacion.tsx
-│   │   └── AmortizacionParcial.tsx  # Simulador de amortización parcial
-│   └── utils/
-│       └── exportar.ts        # Exportación a Excel/PDF
-└── test/           # Configuración de tests
+finsim/
+├── libs/
+│   └── core/                  # @finsim/core — motor de cálculo (funciones puras, sin DOM)
+│       └── src/
+│           ├── index.ts               # API pública del paquete
+│           ├── types.ts
+│           ├── amortizacion.ts
+│           ├── motor.ts
+│           ├── comparadores.ts
+│           ├── amortizacionParcial.ts # Lógica de amortización parcial
+│           ├── formato.ts             # Parseo y formato compartidos por todas las interfaces
+│           └── *.test.ts              # 34 tests, todos pasan
+├── apps/
+│   └── web-react/             # @finsim/web-react — web actual (React), desplegada en GitHub Pages
+│       └── src/ui/
+│           ├── App.tsx
+│           ├── components/
+│           └── utils/exportar.ts      # Exportación a Excel/PDF
+└── nx.json
 ```
+
+> **En migración**: la web React se sustituirá por una web Angular (`apps/web`) y se añadirá
+> la app móvil nativa con NativeScript + Angular (`apps/mobile`), ambas sobre `@finsim/core`.
+> La versión React original queda etiquetada como `v1-react`.
 
 ## Roadmap
 

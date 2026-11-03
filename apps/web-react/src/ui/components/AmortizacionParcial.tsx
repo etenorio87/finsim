@@ -6,8 +6,8 @@
  */
 
 import { useState } from 'react';
-import type { Condiciones, Resultado, EstrategiaAmortizacion } from '../../core/types';
-import { simularAmortizacionParcial } from '../../core/amortizacionParcial';
+import type { Condiciones, Resultado, EstrategiaAmortizacion } from '@finsim/core';
+import { simularAmortizacionParcial } from '@finsim/core';
 import ResultadoFinanciacion from './ResultadoFinanciacion';
 
 interface Props {

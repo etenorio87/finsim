@@ -3,6 +3,15 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ['main']
+    # Solo redesplegar la web si cambia la web, el motor o la configuración común.
+    # Los cambios exclusivos de la app móvil no disparan el despliegue.
+    paths:
+      - 'apps/web-react/**'
+      - 'libs/core/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'nx.json'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
@@ -30,13 +39,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Test
+        run: npx nx run-many -t test -p @finsim/core @finsim/web-react
+
       - name: Build
-        run: npm run build
+        run: npx nx run @finsim/web-react:build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./apps/web-react/dist
 
   deploy:
     environment:
