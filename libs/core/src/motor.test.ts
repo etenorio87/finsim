@@ -193,8 +193,8 @@ describe('Motor de cálculo - Tests de aceptación', () => {
   /**
    * T6 · Aviso de plazos distintos
    *
-   * Cuando se comparan dos financiaciones con diferente número de cuotas,
-   * debe activarse el aviso para que el usuario sepa que el coste total
+   * Cuando se comparan dos financiaciones con distinta DURACIÓN (tiempo de
+   * deuda viva, §5), debe activarse el aviso para que el usuario sepa que el coste total
    * NO es comparable directamente.
    */
   it('T6: Aviso cuando se comparan financiaciones con plazos distintos', () => {
@@ -243,6 +243,31 @@ describe('Motor de cálculo - Tests de aceptación', () => {
     const comparacion = compararFinanciaciones(financiacionA, financiacionB);
 
     // NO debe activar el aviso porque los plazos son iguales
+    expect(comparacion.avisoPlazosDistintos).toBe(false);
+  });
+
+  /**
+   * T6c · El plazo es la duración, no el número de cuotas.
+   * 12 cuotas mensuales (1 año) frente a 12 anuales (12 años): mismo número
+   * de cuotas, duraciones muy distintas → aviso.
+   */
+  it('T6c: Aviso con el mismo número de cuotas pero distinta frecuencia', () => {
+    const base: Condiciones = { importe: 10000, numeroCuotas: 12, frecuencia: 'mensual', tin: 0.06, comisiones: [] };
+
+    const comparacion = compararFinanciaciones(base, { ...base, frecuencia: 'anual' });
+
+    expect(comparacion.avisoPlazosDistintos).toBe(true);
+  });
+
+  /**
+   * T6d · 24 cuotas mensuales y 8 trimestrales duran lo mismo (2 años):
+   * distinto número de cuotas, misma duración → sin aviso.
+   */
+  it('T6d: Sin aviso con distinto número de cuotas pero la misma duración', () => {
+    const base: Condiciones = { importe: 10000, numeroCuotas: 24, frecuencia: 'mensual', tin: 0.06, comisiones: [] };
+
+    const comparacion = compararFinanciaciones(base, { ...base, numeroCuotas: 8, frecuencia: 'trimestral' });
+
     expect(comparacion.avisoPlazosDistintos).toBe(false);
   });
 });

@@ -7,7 +7,7 @@
 
 export * from './types';
 export { calcular } from './motor';
-export { compararFinanciaciones, compararConContado } from './comparadores';
+export { compararFinanciaciones, compararConContado, duracionEnMeses } from './comparadores';
 export { simularAmortizacionParcial } from './amortizacionParcial';
 export {
   tipoDelPeriodo,

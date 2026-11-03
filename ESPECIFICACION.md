@@ -142,7 +142,7 @@ interface ComparacionFinanciaciones {
   ganadora: 'a' | 'b';
   criterio: 'tae';
   diferenciaTae: number;
-  avisoPlazosDistintos: boolean;   // ← ver §5
+  avisoPlazosDistintos: boolean;   // ← ver §5: duración distinta, no nº de cuotas distinto
   detalle: { a: Resultado; b: Resultado };
 }
 
@@ -204,6 +204,8 @@ El argumento comercial habitual —*"le queda en 110 € al mes"*— explota exa
 
 Si la interfaz muestra el coste total en grande, induce a elegir mal. El diseño debe impedirlo.
 
+**"Plazo" significa duración** (tiempo de deuda viva), no número de cuotas. 24 cuotas mensuales y 8 trimestrales tienen el mismo plazo (2 años); 12 mensuales y 12 anuales, no (1 año frente a 12). El aviso se activa cuando las duraciones difieren. *(Aclarado el 03/11/2026: la primera implementación comparaba el número de cuotas.)*
+
 ---
 
 ## 6. Tests — criterio de aceptación
@@ -259,6 +261,8 @@ Para cualquier condición: Σ capital de todas las filas === importe  (±0.01)
 ### T6 · Aviso de plazos
 ```
 compararFinanciaciones con plazos distintos → avisoPlazosDistintos === true
+12 cuotas mensuales vs 12 anuales (misma cantidad, 1 año vs 12) → true
+24 cuotas mensuales vs 8 trimestrales (misma duración, 2 años)  → false
 ```
 
 ---

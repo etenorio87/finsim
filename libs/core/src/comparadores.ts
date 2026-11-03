@@ -12,6 +12,15 @@ import type {
   ComparacionContado,
 } from './types';
 import { calcular } from './motor';
+import { periodosPorAnio } from './amortizacion';
+
+/**
+ * Duración de una financiación en meses: el tiempo de deuda viva (§5).
+ * 24 cuotas mensuales y 8 trimestrales duran lo mismo: 24 meses.
+ */
+export function duracionEnMeses(c: Condiciones): number {
+  return (c.numeroCuotas * 12) / periodosPorAnio(c.frecuencia);
+}
 
 /**
  * Compara dos ofertas de financiación.
@@ -31,8 +40,9 @@ export function compararFinanciaciones(
   const ganadora = resultadoA.tae <= resultadoB.tae ? 'a' : 'b';
   const diferenciaTae = Math.abs(resultadoA.tae - resultadoB.tae);
 
-  // Activar aviso si los plazos difieren (§5)
-  const avisoPlazosDistintos = a.numeroCuotas !== b.numeroCuotas;
+  // Activar aviso si los plazos difieren (§5). El plazo es la DURACIÓN, no el
+  // número de cuotas: 12 mensuales (1 año) y 12 anuales (12 años) no son comparables.
+  const avisoPlazosDistintos = duracionEnMeses(a) !== duracionEnMeses(b);
 
   return {
     ganadora,

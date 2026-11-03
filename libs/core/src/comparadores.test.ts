@@ -8,7 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import type { Condiciones } from './types';
-import { compararFinanciaciones, compararConContado } from './comparadores';
+import { compararFinanciaciones, compararConContado, duracionEnMeses } from './comparadores';
 
 describe('compararFinanciaciones', () => {
   it('Elige la financiación con menor TAE', () => {
@@ -221,5 +221,15 @@ describe('compararConContado', () => {
 
     // La TAE debe reflejar la comisión, no ser 0
     expect(comparacion.taeFinanciacion).toBeGreaterThan(0);
+  });
+});
+
+describe('duracionEnMeses', () => {
+  const base: Condiciones = { importe: 1000, numeroCuotas: 24, frecuencia: 'mensual', tin: 0.05, comisiones: [] };
+
+  it('convierte cuotas a meses según la frecuencia', () => {
+    expect(duracionEnMeses(base)).toBe(24);
+    expect(duracionEnMeses({ ...base, numeroCuotas: 8, frecuencia: 'trimestral' })).toBe(24);
+    expect(duracionEnMeses({ ...base, numeroCuotas: 5, frecuencia: 'anual' })).toBe(60);
   });
 });

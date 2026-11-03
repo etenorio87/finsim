@@ -2,7 +2,7 @@
  * Textos de presentación compartidos por web y móvil.
  */
 
-import { periodosPorAnio } from '@finsim/core';
+import { duracionEnMeses } from '@finsim/core';
 import type {
   ComparacionFinanciaciones,
   Condiciones,
@@ -61,11 +61,6 @@ export function tituloComparacion(comparacion: ComparacionFinanciaciones): strin
   return `${prefijo}: ${letraOferta(comparacion.ganadora)}`;
 }
 
-/** Duración de un préstamo en meses, según el número de cuotas y la frecuencia. */
-export function duracionEnMeses(condiciones: Condiciones): number {
-  return Math.round((condiciones.numeroCuotas * 12) / periodosPorAnio(condiciones.frecuencia));
-}
-
 /** 48 → "4 años" · 6 → "6 meses" · 18 → "1 año y 6 meses" */
 export function formatearDuracion(meses: number): string {
   const anios = Math.floor(meses / 12);
@@ -80,15 +75,16 @@ export function formatearDuracion(meses: number): string {
  * Explicación del aviso de plazos distintos (issue #5).
  *
  * Depende de si la oferta más barata es también la más larga:
- * - más larga  → "…pero estarás endeudado 4 años más" (texto del issue)
- * - más corta  → "…y además terminas 4 años antes"
- * - misma duración con distinta frecuencia (24 mensuales vs 8 trimestrales)
+ * - más larga → "…pero estarás endeudado 4 años más" (texto del issue)
+ * - más corta → "…y además terminas 4 años antes"
+ *
+ * Devuelve null si las dos duran lo mismo: en ese caso no hay aviso.
  */
 export function textoAvisoPlazos(
   comparacion: ComparacionFinanciaciones,
   a: Condiciones,
   b: Condiciones,
-): string {
+): string | null {
   const letra = letraOferta(comparacion.ganadora);
   const [ganadora, otra] = comparacion.ganadora === 'a' ? [a, b] : [b, a];
   const diferencia = duracionEnMeses(ganadora) - duracionEnMeses(otra);
@@ -103,8 +99,5 @@ export function textoAvisoPlazos(
   if (diferencia < 0) {
     return `${letra} es dinero más barato y además terminas ${formatearDuracion(-diferencia)} antes.`;
   }
-  return (
-    `${letra} es dinero más barato. Las dos duran lo mismo ` +
-    `(${formatearDuracion(duracionEnMeses(ganadora))}); solo cambia la frecuencia de pago.`
-  );
+  return null;
 }

@@ -2,6 +2,19 @@
 
 ## Migración a plataforma Angular
 
+### 03/11/2026 — Corrección: aviso de plazos distintos
+
+- **El aviso compara la duración, no el número de cuotas.** Antes, 12 cuotas mensuales (1 año) frente a 12 anuales (12 años) no avisaban, y 24 mensuales frente a 8 trimestrales (2 años las dos) sí. Afecta también a la web en producción. Tests T6c y T6d; especificación aclarada en §5 y T6
+- Nueva función `duracionEnMeses()` en `@finsim/core`
+
+### 03/11/2026 — Fase 1: capa compartida
+
+- Nuevo paquete `@finsim/shared` (Angular 22): stores con signals por pantalla, formularios tipados, `CampoDecimalBase` (`ControlValueAccessor`), pipes `moneda` y `porcentaje` y exportación a Excel/PDF con destino por plataforma
+- Sin dependencias de DOM: typecheck sin la librería DOM, tests en Node y compilación AOT parcial con `ngc`
+- Texto del aviso de plazos según la duración real (#5): "…estarás endeudado 4 años más" si la oferta más barata es la más larga, "…y además terminas 4 años antes" si es la más corta
+- Correcciones que llegarán con la web Angular: el periodo de la cuota depende de la frecuencia ("cada trimestre"); la amortización parcial no recalcula con datos inválidos; con el formulario inválido el resultado se oculta; formato es-ES (`443,21 €`)
+- TypeScript 7.0 → 6.0.3, requisito de Angular 22
+
 ### 03/11/2026 — Fase 0: monorepo
 
 - Proyecto convertido en monorepo **Nx + npm workspaces**
