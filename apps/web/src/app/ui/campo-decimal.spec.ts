@@ -44,7 +44,21 @@ describe('CampoDecimalComponent (web)', () => {
     expect(importe.value).toBe('10000');
   });
 
-  it('regresión #1: "14,95" en el TIN → 0.1495 en el formulario', async () => {
+  it('al enfocar cambia el texto y lo selecciona sin esperar al render', async () => {
+    const { host, fixture, tin } = await montar();
+    tin.focus();
+    // Sin whenStable(): lo que se escriba ahora debe sustituir al texto, no añadirse detrás.
+    expect(tin.value).toBe('6');
+    expect([tin.selectionStart, tin.selectionEnd]).toEqual([0, 1]);
+    tin.setRangeText('12,5', tin.selectionStart!, tin.selectionEnd!, 'end');
+    tin.dispatchEvent(new Event('input'));
+    tin.dispatchEvent(new Event('blur'));
+    await fixture.whenStable();
+    expect(host.tin.value).toBe(0.125);
+    expect(tin.value).toBe('12,50');
+  });
+
+  it('regresión #1:"14,95" en el TIN → 0.1495 en el formulario', async () => {
     const { host, tin, escribir } = await montar();
     await escribir(tin, '14,95');
     expect(host.tin.value).toBe(0.1495);

@@ -9,8 +9,8 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "nx run @finsim/web-react:dev",
-    "dev:web": "nx run @finsim/web:serve",
+    "dev": "nx run @finsim/web:serve",
+    "preview": "nx run @finsim/web:preview",
     "build": "nx run-many -t build",
     "test": "nx run-many -t test",
     "typecheck": "nx run-many -t typecheck",

@@ -102,7 +102,7 @@ Por eso la interfaz **avisa cuando los plazos difieren**.
 ## Datos técnicos
 
 - Motor: TypeScript puro, sin dependencias
-- Tests: 34/34 (casos reales validados + formato y parseo)
+- Tests: 37 en el motor (casos reales validados + formato y parseo), 45 en la capa compartida y 9 en la web
 - Precisión TAE: 10 decimales (búsqueda binaria)
 - Amortización: Sistema francés (cuota constante)
 
@@ -111,11 +111,13 @@ Por eso la interfaz **avisa cuando los plazos difieren**.
 El proyecto está configurado para GitHub Pages:
 
 ```bash
-# Build de la web
-npx nx run @finsim/web-react:build
+# Artefacto de despliegue: build de producción (base /finsim/) + 404.html
+npx nx run @finsim/web:pages
 
-# Preview local del build
-npm run preview -w @finsim/web-react
+# Vista previa local que imita a GitHub Pages → http://localhost:4300/finsim/
+npm run preview
 ```
 
-El workflow `.github/workflows/deploy.yml` despliega automáticamente al hacer push a `main` cuando cambian la web o el motor.
+GitHub Pages no conoce las rutas de la app: `/finsim/comparar` no es un archivo. Para esas rutas sirve `404.html`, que es una copia de `index.html`, y el router de Angular muestra la pantalla correcta.
+
+El workflow `.github/workflows/deploy.yml` despliega automáticamente al hacer push a `main` cuando cambian la web, las librerías o la configuración común.

@@ -2,6 +2,15 @@
 
 ## Migración a plataforma Angular
 
+### 03/11/2026 — Fase 3: la web Angular pasa a producción
+
+- **https://etenorio87.github.io/finsim/ sirve la web Angular.** Cada pantalla tiene su enlace: `/finsim/simular`, `/finsim/comparar`, `/finsim/contado`. Funcionan los enlaces directos y la recarga gracias a `404.html`
+- Paridad verificada contra la v1 con los mismos datos: simulador (5 escenarios, resumen y cuadro completo), comparador (4), financiar o contado (3) y amortización parcial (5, con las dos estrategias). Las cifras coinciden; solo cambian los textos mejorados en las fases 1 y 2 y el redondeo de 5,925 % (la v1 mostraba 5,92 % y la v2 muestra 5,93 %)
+- **Corregido: el campo decimal podía pegar lo escrito tras el valor anterior.** Al enfocar, el texto pasaba de "6,00" a "6" en el siguiente render; si se escribía antes (autocompletado, tecleo muy rápido), "12,5" acababa como "612,5". Ahora el cambio y la selección ocurren en el mismo evento
+- Corregido respecto a la v1: en "Rentabilidad" y "Tipo impositivo", escribir un decimal con punto ("7.5") se convertía en "05"
+- Eliminada la web React (`apps/web-react`); sigue disponible en la etiqueta `v1-react`
+- `npm run dev` arranca la web Angular; `npm run preview` sirve el artefacto de despliegue como GitHub Pages
+
 ### 03/11/2026 — Seguridad de dependencias
 
 - **`xlsx` 0.18.5 → 0.20.3**, instalado desde el CDN oficial de SheetJS (la versión de npm está abandonada). Corrige Prototype Pollution (GHSA-4r6h-8v6p-xvw6) y ReDoS (GHSA-5pgg-2g8v-p4x9). Afecta a la web en producción

@@ -46,7 +46,8 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "baseHref": "/finsim/"
         },
         "development": {
           "optimization": false,
@@ -77,19 +78,23 @@
         "watch": false
       }
     },
-    "serve-static": {
-      "continuous": true,
-      "readyWhen": {
-        "signal": true
-      },
+    "pages": {
       "dependsOn": [
         "build"
       ],
-      "executor": "@nx/web:file-server",
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "@finsim/web:build",
-        "staticFilePath": "dist/apps/web/browser",
-        "spa": true
+        "command": "node -e \"require('fs').copyFileSync('dist/apps/web/browser/index.html','dist/apps/web/browser/404.html')\""
+      }
+    },
+    "preview": {
+      "continuous": true,
+      "dependsOn": [
+        "pages"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node apps/web/tools/preview-pages.mjs"
       }
     }
   }
