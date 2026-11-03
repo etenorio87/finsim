@@ -51,10 +51,15 @@ export class AmortizacionParcialStore {
     });
   });
 
+  /**
+   * Abre el panel para un préstamo. Si ya estaba abierto (el usuario ha
+   * cambiado el préstamo de origen), conserva lo escrito y si había simulado.
+   */
   abrir(origen: OrigenAmortizacion): void {
-    const formulario = crearAmortizacionParcialForm(origen);
+    const previo = this.estado();
+    const formulario = crearAmortizacionParcialForm(origen, previo?.formulario.getRawValue());
     formulario.valueChanges.subscribe(() => this.version.update((v) => v + 1));
-    this.simulado.set(false);
+    if (!previo) this.simulado.set(false);
     this.estado.set({ origen, formulario });
   }
 

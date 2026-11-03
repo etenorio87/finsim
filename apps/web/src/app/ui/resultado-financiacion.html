@@ -1,0 +1,119 @@
+@let r = resultado();
+@let e = estilos();
+<div class="bg-card rounded-2xl p-6 border-2 transition-all"
+  [class]="esGanadora() ? e.borde + ' shadow-hover' : 'border-gray-200 shadow-card'">
+
+  @if (etiqueta(); as titulo) {
+    <div class="flex items-center justify-between mb-6">
+      <h4 class="font-bold text-lg text-secondary">{{ titulo }}</h4>
+      @if (esGanadora()) {
+        <span class="text-sm font-bold px-3 py-1 rounded-full flex items-center gap-1" [class]="e.texto + ' ' + e.fondo">
+          <span class="text-lg">✓</span> {{ textoDistintivo() }}
+        </span>
+      }
+    </div>
+  }
+
+  <!-- 1. TAE: lo que decide -->
+  <div class="mb-6 pb-6 border-b-2" [class]="esGanadora() ? e.borde : 'border-gray-100'">
+    <div class="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
+      <span class="w-6 h-6 rounded-full flex items-center justify-center" [class]="e.fondo">
+        <span class="text-xs" [class]="e.texto">1</span>
+      </span>
+      TAE (precio real del dinero)
+    </div>
+    <div class="text-5xl sm:text-6xl font-black mb-2" [class]="esGanadora() ? e.texto : 'text-secondary'">
+      {{ r.tae | porcentaje }}
+    </div>
+    <div class="text-xs font-medium inline-block px-3 py-1 rounded-full" [class]="e.texto + ' ' + e.fondo">
+      Este es el coste real. Compara siempre por TAE.
+    </div>
+  </div>
+
+  <!-- 2. Cuota: restricción de presupuesto -->
+  <div class="mb-6 pb-6 border-b border-gray-100">
+    <div class="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
+      <span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+        <span class="text-xs text-gray-600">2</span>
+      </span>
+      Cuota
+    </div>
+    <div class="text-3xl font-bold text-secondary">{{ r.cuota | moneda }}</div>
+    <div class="text-sm text-gray-500 mt-1">cada {{ periodo() }}</div>
+  </div>
+
+  <!-- 3. Costes: informativos -->
+  <div class="grid grid-cols-2 gap-4 mb-6">
+    <div class="bg-gray-50 rounded-xl p-4">
+      <div class="text-xs text-gray-500 mb-1">Coste financiero</div>
+      <div class="text-lg font-bold text-secondary">{{ r.costeFinanciero | moneda }}</div>
+    </div>
+    <div class="bg-gray-50 rounded-xl p-4">
+      <div class="text-xs text-gray-500 mb-1">Coste total</div>
+      <div class="text-lg font-bold text-secondary">{{ r.costeTotal | moneda }}</div>
+    </div>
+    <div class="bg-gray-50 rounded-xl p-4">
+      <div class="text-xs text-gray-500 mb-1">TIN nominal</div>
+      <div class="text-lg font-bold text-secondary">{{ r.tin | porcentaje }}</div>
+    </div>
+    <div class="bg-gray-50 rounded-xl p-4">
+      <div class="text-xs text-gray-500 mb-1">Saldo medio</div>
+      <div class="text-lg font-bold text-secondary">{{ r.saldoMedio | moneda }}</div>
+    </div>
+  </div>
+
+  @if (r.cuadro; as cuadro) {
+    <button type="button" (click)="alternarCuadro()" [attr.aria-expanded]="cuadroVisible()"
+      class="w-full text-sm font-medium flex items-center justify-between gap-2 px-4 py-3 rounded-xl transition-colors border border-gray-200"
+      [class]="e.texto + ' ' + e.hover">
+      <span class="flex items-center gap-2">
+        <span aria-hidden="true">{{ cuadroVisible() ? '▼' : '▶' }}</span>
+        Ver cuadro de amortización
+      </span>
+      <span class="text-xs text-gray-500">{{ cuadro.length }} cuotas</span>
+    </button>
+
+    <div class="mt-3 flex gap-2">
+      <button type="button" (click)="exportar('excel')" [disabled]="exportando() !== null"
+        class="flex-1 bg-positive hover:bg-positive/90 disabled:opacity-60 text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
+        <span aria-hidden="true">📊</span>
+        <span>{{ exportando() === 'excel' ? 'Generando…' : 'Exportar a Excel' }}</span>
+      </button>
+      <button type="button" (click)="exportar('pdf')" [disabled]="exportando() !== null"
+        class="flex-1 bg-negative hover:bg-negative/90 disabled:opacity-60 text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
+        <span aria-hidden="true">📄</span>
+        <span>{{ exportando() === 'pdf' ? 'Generando…' : 'Exportar a PDF' }}</span>
+      </button>
+    </div>
+    @if (errorExportacion(); as mensaje) {
+      <p class="mt-2 text-sm text-negative" role="alert">{{ mensaje }}</p>
+    }
+
+    @if (cuadroVisible()) {
+      <div class="mt-4 overflow-x-auto bg-gray-50 rounded-xl p-4">
+        <table class="w-full text-sm">
+          <thead class="text-gray-600 border-b-2 border-gray-200">
+            <tr>
+              <th scope="col" class="text-left py-3 px-2 font-semibold">#</th>
+              <th scope="col" class="text-right py-3 px-2 font-semibold">Cuota</th>
+              <th scope="col" class="text-right py-3 px-2 font-semibold">Interés</th>
+              <th scope="col" class="text-right py-3 px-2 font-semibold">Capital</th>
+              <th scope="col" class="text-right py-3 px-2 font-semibold">Pendiente</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-700">
+            @for (fila of cuadro; track fila.numero; let par = $even) {
+              <tr class="border-b border-gray-200 hover:bg-white transition-colors" [class]="par ? 'bg-gray-50' : 'bg-white'">
+                <td class="py-3 px-2 font-medium">{{ fila.numero }}</td>
+                <td class="text-right py-3 px-2 whitespace-nowrap">{{ fila.cuota | moneda }}</td>
+                <td class="text-right py-3 px-2 whitespace-nowrap text-negative">{{ fila.interes | moneda }}</td>
+                <td class="text-right py-3 px-2 whitespace-nowrap text-positive">{{ fila.capital | moneda }}</td>
+                <td class="text-right py-3 px-2 whitespace-nowrap font-semibold">{{ fila.capitalPendiente | moneda }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

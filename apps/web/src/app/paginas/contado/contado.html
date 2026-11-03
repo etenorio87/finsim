@@ -1,0 +1,111 @@
+@let inversion = store.formularioInversion.controls;
+<div class="space-y-6 animate-fade-in">
+  <div class="bg-gradient-to-br from-positive/10 to-primary/10 rounded-2xl p-6 border border-positive/20 shadow-soft">
+    <h2 class="font-bold text-xl mb-3 text-secondary">¿Te conviene financiar o pagar al contado?</h2>
+    <p class="text-gray-700 leading-relaxed">
+      Si tienes el dinero invertido y rindiendo, puede que te convenga financiar.
+      La regla: financiar solo si <strong class="text-primary">TAE &lt; rentabilidad neta</strong>.
+    </p>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+    <div class="bg-card rounded-2xl p-6 border-2 border-primary shadow-card hover:shadow-hover transition-shadow">
+      <fs-formulario-condiciones [formulario]="store.formularioCondiciones" titulo="Condiciones de la financiación" letra="F" acento="primary" />
+    </div>
+
+    <div class="bg-card rounded-2xl p-6 border-2 border-positive shadow-card hover:shadow-hover transition-shadow">
+      <div class="space-y-5" [formGroup]="store.formularioInversion">
+        <div class="flex items-center gap-2 pb-3 border-b-2 border-positive">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-positive/5 to-transparent border-2 border-positive flex items-center justify-center">
+            <span class="font-bold text-positive">💰</span>
+          </div>
+          <h3 class="font-bold text-lg text-secondary">Tu inversión</h3>
+        </div>
+
+        <div>
+          <label for="rentabilidad" class="block text-sm font-medium text-gray-700 mb-2">Rentabilidad bruta anual (%)</label>
+          <fs-campo-decimal idCampo="rentabilidad" formControlName="rentabilidadBruta" modo="porcentaje" placeholder="10"
+            [invalido]="!!error(inversion.rentabilidadBruta)" />
+          <p class="text-xs text-gray-500 mt-2">La rentabilidad que obtienes ANTES de impuestos</p>
+        </div>
+
+        <div>
+          <label for="impuestos" class="block text-sm font-medium text-gray-700 mb-2">Tipo impositivo (%)</label>
+          <fs-campo-decimal idCampo="impuestos" formControlName="tipoImpositivo" modo="porcentaje" placeholder="19"
+            [invalido]="!!error(inversion.tipoImpositivo)" />
+          @if (error(inversion.tipoImpositivo)) {
+            <p class="text-xs text-negative mt-1">Debe estar entre 0 y 100</p>
+          } @else {
+            <p class="text-xs text-gray-500 mt-2">Impuestos sobre las ganancias (19%, 21%, 23%, etc.)</p>
+          }
+        </div>
+
+        @if (store.decision(); as d) {
+          <div class="bg-gradient-to-br from-positive/10 to-transparent rounded-xl p-5 border-2 border-positive/30">
+            <div class="text-sm font-medium text-gray-600 mb-2">Rentabilidad neta (después de impuestos)</div>
+            <div class="text-3xl font-black text-positive">{{ d.rentabilidadNeta | porcentaje }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <button type="button" (click)="store.calcular()"
+    class="w-full bg-secondary hover:bg-secondary/90 text-white font-bold py-5 px-6 rounded-2xl shadow-lg hover:shadow-hover transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+    <span class="text-lg">Calcular decisión</span>
+  </button>
+
+  @if (store.decision(); as d) {
+    @let financiar = d.recomendacion === 'financiar';
+    <div class="space-y-6 animate-slide-up">
+      <div class="rounded-2xl p-6 sm:p-8 border-2 shadow-card"
+        [class]="financiar ? 'bg-gradient-to-br from-positive/20 to-primary/10 border-positive' : 'bg-gradient-to-br from-primary/20 to-accent/10 border-primary'">
+        <div class="text-center">
+          <div class="text-7xl mb-6" aria-hidden="true">{{ financiar ? '✅' : '💰' }}</div>
+          <h3 class="text-3xl sm:text-4xl font-black mb-4 text-secondary">
+            {{ financiar ? 'Conviene FINANCIAR' : 'Mejor pagar AL CONTADO' }}
+          </h3>
+          <p class="text-xl text-gray-700 font-medium">
+            @if (financiar) {
+              Ganas <span class="font-black text-positive text-2xl">{{ d.diferenciaTipos | porcentaje }}</span> anual financiando
+            } @else {
+              Pierdes <span class="font-black text-negative text-2xl">{{ -d.diferenciaTipos | porcentaje }}</span> anual si financias
+            }
+          </p>
+        </div>
+
+        <div class="mt-8 pt-8 border-t-2 border-white/30">
+          <div class="grid md:grid-cols-2 gap-6 text-center">
+            <div class="bg-white/50 rounded-xl p-6 backdrop-blur-sm">
+              <div class="text-sm font-medium text-gray-600 mb-2">TAE financiación</div>
+              <div class="text-4xl font-black text-primary">{{ d.taeFinanciacion | porcentaje }}</div>
+            </div>
+            <div class="bg-white/50 rounded-xl p-6 backdrop-blur-sm">
+              <div class="text-sm font-medium text-gray-600 mb-2">Rentabilidad neta</div>
+              <div class="text-4xl font-black text-positive">{{ d.rentabilidadNeta | porcentaje }}</div>
+            </div>
+          </div>
+
+          <div class="mt-6 text-center bg-white/30 rounded-xl p-5 backdrop-blur-sm">
+            <p class="text-gray-800 leading-relaxed">
+              @if (financiar) {
+                Tu dinero rinde más ({{ d.rentabilidadNeta | porcentaje }}) que el coste de financiar ({{ d.taeFinanciacion | porcentaje }}).<br />
+                <strong class="text-positive font-bold">Financia y mantén tu dinero invertido.</strong>
+              } @else {
+                El coste de financiar ({{ d.taeFinanciacion | porcentaje }}) es mayor que tu rentabilidad neta ({{ d.rentabilidadNeta | porcentaje }}).<br />
+                <strong class="text-primary font-bold">Paga al contado y ahorra intereses.</strong>
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+
+      @if (store.resultado(); as resultado) {
+        <div>
+          <h3 class="text-xl font-bold mb-4 text-secondary">Detalle de la financiación</h3>
+          <fs-resultado-financiacion [resultado]="resultado" [condiciones]="store.condiciones()" acento="primary" />
+        </div>
+      }
+    </div>
+  }
+</div>

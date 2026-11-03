@@ -1,0 +1,61 @@
+<div class="space-y-6 animate-fade-in">
+  <div class="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-6 border border-primary/20 shadow-soft">
+    <h2 class="font-bold text-xl mb-3 text-secondary">¿Cuál de estas dos ofertas es mejor?</h2>
+    <p class="text-gray-700 leading-relaxed">
+      Introduce las condiciones de cada oferta y compara. El criterio de decisión
+      es la <strong class="text-primary">TAE</strong> (el precio real del dinero), no la cuota mensual.
+    </p>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+    <div class="bg-card rounded-2xl p-6 border-2 border-primary shadow-card hover:shadow-hover transition-shadow">
+      <fs-formulario-condiciones [formulario]="store.formularioA" titulo="Oferta A" letra="A" acento="primary" />
+    </div>
+    <div class="bg-card rounded-2xl p-6 border-2 border-accent shadow-card hover:shadow-hover transition-shadow">
+      <fs-formulario-condiciones [formulario]="store.formularioB" titulo="Oferta B" letra="B" acento="accent" />
+    </div>
+  </div>
+
+  <button type="button" (click)="store.comparar()"
+    class="w-full bg-secondary hover:bg-secondary/90 text-white font-bold py-5 px-6 rounded-2xl shadow-lg hover:shadow-hover transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+    <span class="text-lg">Comparar ofertas</span>
+  </button>
+
+  @if (store.comparacion(); as comparacion) {
+    <div class="space-y-6 animate-slide-up">
+      <div class="bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl p-6 sm:p-8 border-2 border-primary/30 shadow-card">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <h3 class="text-2xl font-black text-secondary">{{ store.titulo() }}</h3>
+          <div class="sm:text-right">
+            <div class="text-sm text-gray-600">Diferencia de TAE</div>
+            <div class="text-2xl font-bold text-primary">{{ comparacion.diferenciaTae | porcentaje }}</div>
+          </div>
+        </div>
+
+        @if (store.avisoPlazos(); as aviso) {
+          <div class="mt-6 bg-yellow-50 border-2 border-yellow-400 rounded-xl p-5" role="note">
+            <div class="flex items-start gap-4">
+              <span class="text-3xl" aria-hidden="true">⚠️</span>
+              <div class="text-sm text-yellow-900">
+                <p class="font-bold text-base mb-2">Atención: los plazos son diferentes</p>
+                <p class="text-yellow-800 leading-relaxed">{{ aviso }}</p>
+                <p class="text-yellow-800 leading-relaxed mt-2">Compara el coste financiero total en las tarjetas de abajo.</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        @if (store.resultadoA(); as a) {
+          <fs-resultado-financiacion [resultado]="a" [condiciones]="store.condicionesA()" etiqueta="Oferta A"
+            acento="primary" [esGanadora]="comparacion.ganadora === 'a'" [textoDistintivo]="textoDistintivo()" />
+        }
+        @if (store.resultadoB(); as b) {
+          <fs-resultado-financiacion [resultado]="b" [condiciones]="store.condicionesB()" etiqueta="Oferta B"
+            acento="accent" [esGanadora]="comparacion.ganadora === 'b'" [textoDistintivo]="textoDistintivo()" />
+        }
+      </div>
+    </div>
+  }
+</div>

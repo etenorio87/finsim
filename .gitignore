@@ -29,3 +29,10 @@ coverage
 # Nx
 .nx/cache
 .nx/workspace-data
+
+.angular
+
+__screenshots__/
+
+# Artefactos de pruebas manuales con Playwright
+.playwright-mcp

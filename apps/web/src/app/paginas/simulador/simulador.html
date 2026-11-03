@@ -1,0 +1,35 @@
+<div class="space-y-6 animate-fade-in">
+  <div class="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-6 border border-primary/20 shadow-soft">
+    <h2 class="font-bold text-xl mb-3 text-secondary">Simula tu financiación</h2>
+    <p class="text-gray-700 leading-relaxed">
+      Introduce las condiciones de tu financiación y descubre el coste real.
+      Recuerda: el precio del dinero es la <strong class="text-primary">TAE</strong>, no la cuota mensual.
+    </p>
+  </div>
+
+  <div class="bg-card rounded-2xl p-6 border-2 border-primary shadow-card hover:shadow-hover transition-shadow">
+    <fs-formulario-condiciones [formulario]="store.formulario" titulo="Condiciones de la financiación" letra="F" acento="primary" />
+  </div>
+
+  <button type="button" (click)="store.simular()"
+    class="w-full bg-secondary hover:bg-secondary/90 text-white font-bold py-5 px-6 rounded-2xl shadow-lg hover:shadow-hover transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+    <span class="text-lg">Simular financiación</span>
+  </button>
+
+  @if (store.resultado(); as resultado) {
+    <div class="space-y-6 animate-slide-up">
+      <fs-resultado-financiacion [resultado]="resultado" [condiciones]="store.condiciones()" acento="primary" />
+
+      @if (store.amortizacionAbierta()) {
+        @if (origen(); as o) {
+          <fs-amortizacion-parcial [origen]="o" (cerrar)="store.cerrarAmortizacion()" />
+        }
+      } @else {
+        <button type="button" (click)="store.abrirAmortizacion()"
+          class="w-full bg-accent hover:bg-accent/90 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-hover transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+          💰 Simular amortización parcial
+        </button>
+      }
+    </div>
+  }
+</div>
