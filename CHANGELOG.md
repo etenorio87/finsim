@@ -2,6 +2,14 @@
 
 ## Migración a plataforma Angular
 
+### 03/11/2026 — Seguridad de dependencias
+
+- **`xlsx` 0.18.5 → 0.20.3**, instalado desde el CDN oficial de SheetJS (la versión de npm está abandonada). Corrige Prototype Pollution (GHSA-4r6h-8v6p-xvw6) y ReDoS (GHSA-5pgg-2g8v-p4x9). Afecta a la web en producción
+- **`dompurify` 3.4.15 → 3.4.17** (dependencia de jsPDF): corrige cinco avisos críticos de XSS
+- `npm audit --omit=dev`: 0 vulnerabilidades. En desarrollo quedan avisos moderados de `minimatch` (DoS por patrones glob); Nx 24 fija esa versión y no afectan a lo que se publica
+- Vitest 4.1.11 → 4.1.12
+- CI y despliegue con Node 24 (Node 20 ya no tiene soporte)
+
 ### 03/11/2026 — Fase 2: web Angular
 
 - Nueva app `@finsim/web` (Angular 22, zoneless, esbuild, Tailwind v4) con las cuatro funcionalidades de la v1 sobre `@finsim/shared`
