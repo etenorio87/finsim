@@ -1,0 +1,72 @@
+@let inversion = store.formularioInversion.controls;
+<ScrollView>
+  <StackLayout fsContenedorEnfocable class="pagina">
+    <StackLayout class="intro intro-positive">
+      <Label text="¿Te conviene financiar o pagar al contado?" class="titulo" textWrap="true"></Label>
+      <Label text="Si tienes el dinero invertido y rindiendo, puede que te convenga financiar. La regla: financiar solo si TAE < rentabilidad neta." class="subtitulo" textWrap="true"></Label>
+    </StackLayout>
+
+    <fs-formulario-condiciones [formulario]="store.formularioCondiciones" titulo="Condiciones de la financiación" letra="F" acento="primary"></fs-formulario-condiciones>
+
+    <StackLayout [formGroup]="store.formularioInversion" class="tarjeta borde-positive">
+      <GridLayout columns="auto, *" class="cabecera-tarjeta">
+        <Label col="0" text="💰" class="distintivo distintivo-positive"></Label>
+        <Label col="1" text="Tu inversión" class="titulo-tarjeta"></Label>
+      </GridLayout>
+
+      <Label text="Rentabilidad bruta anual (%)" class="etiqueta"></Label>
+      <fs-campo-decimal formControlName="rentabilidadBruta" modo="porcentaje" placeholder="10"
+        [invalido]="!!error(inversion.rentabilidadBruta)"></fs-campo-decimal>
+      <Label text="La rentabilidad que obtienes ANTES de impuestos" class="ayuda" textWrap="true"></Label>
+
+      <Label text="Tipo impositivo (%)" class="etiqueta"></Label>
+      <fs-campo-decimal formControlName="tipoImpositivo" modo="porcentaje" placeholder="19"
+        [invalido]="!!error(inversion.tipoImpositivo)"></fs-campo-decimal>
+      @if (error(inversion.tipoImpositivo)) {
+        <Label text="Debe estar entre 0 y 100" class="error"></Label>
+      } @else {
+        <Label text="Impuestos sobre las ganancias (19 %, 21 %, 23 %…)" class="ayuda" textWrap="true"></Label>
+      }
+
+      @if (store.decision(); as d) {
+        <StackLayout class="coste neta">
+          <Label text="Rentabilidad neta (después de impuestos)" class="etiqueta-coste" textWrap="true"></Label>
+          <Label [text]="d.rentabilidadNeta | porcentaje" class="cuota texto-positive"></Label>
+        </StackLayout>
+      }
+    </StackLayout>
+
+    <Button text="Calcular decisión" (tap)="calcular()" class="boton boton-principal"></Button>
+
+    @if (store.decision(); as d) {
+      @let financiar = d.recomendacion === 'financiar';
+      <StackLayout [class]="financiar ? 'tarjeta borde-positive veredicto-contado' : 'tarjeta borde-primary veredicto-contado'">
+        <Label [text]="financiar ? '✅' : '💰'" class="emoji-veredicto"></Label>
+        <Label [text]="financiar ? 'Conviene FINANCIAR' : 'Mejor pagar AL CONTADO'" class="veredicto centrado" textWrap="true"></Label>
+        <Label [text]="financiar ? 'Ganas ' + (d.diferenciaTipos | porcentaje) + ' anual financiando' : 'Pierdes ' + (-d.diferenciaTipos | porcentaje) + ' anual si financias'"
+          [class]="financiar ? 'resumen-veredicto texto-positive' : 'resumen-veredicto texto-negative'" textWrap="true"></Label>
+
+        <GridLayout columns="*, 8, *" class="costes">
+          <StackLayout col="0" class="coste">
+            <Label text="TAE financiación" class="etiqueta-coste centrado"></Label>
+            <Label [text]="d.taeFinanciacion | porcentaje" class="valor-grande texto-primary centrado"></Label>
+          </StackLayout>
+          <StackLayout col="2" class="coste">
+            <Label text="Rentabilidad neta" class="etiqueta-coste centrado"></Label>
+            <Label [text]="d.rentabilidadNeta | porcentaje" class="valor-grande texto-positive centrado"></Label>
+          </StackLayout>
+        </GridLayout>
+
+        <Label textWrap="true" class="ayuda centrado"
+          [text]="financiar
+            ? 'Tu dinero rinde más (' + (d.rentabilidadNeta | porcentaje) + ') que el coste de financiar (' + (d.taeFinanciacion | porcentaje) + '). Financia y mantén tu dinero invertido.'
+            : 'El coste de financiar (' + (d.taeFinanciacion | porcentaje) + ') es mayor que tu rentabilidad neta (' + (d.rentabilidadNeta | porcentaje) + '). Paga al contado y ahorra intereses.'"></Label>
+      </StackLayout>
+
+      @if (store.resultado(); as resultado) {
+        <Label text="Detalle de la financiación" class="titulo-seccion"></Label>
+        <fs-resultado-financiacion [resultado]="resultado" [condiciones]="store.condiciones()" acento="primary"></fs-resultado-financiacion>
+      }
+    }
+  </StackLayout>
+</ScrollView>

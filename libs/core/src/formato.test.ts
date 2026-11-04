@@ -35,6 +35,21 @@ describe('parseDecimal', () => {
     expect(parseDecimal('600')).toBe(600);
   });
 
+  it('separador de miles: con punto y coma, el último es el decimal', () => {
+    expect(parseDecimal('1.234,56')).toBe(1234.56);
+    expect(parseDecimal('1,234.56')).toBe(1234.56);
+    expect(parseDecimal('12.345.678,9')).toBe(12345678.9);
+  });
+
+  it('separador de miles: un separador repetido son miles', () => {
+    expect(parseDecimal('1.234.567')).toBe(1234567);
+    expect(parseDecimal('1,234,567')).toBe(1234567);
+  });
+
+  it('acepta el texto que muestra el campo al salir ("10.000,00")', () => {
+    expect(parseDecimal('10.000,00')).toBe(10000);
+  });
+
   it('devuelve 0 si el texto no es numérico', () => {
     expect(parseDecimal('')).toBe(0);
     expect(parseDecimal('abc')).toBe(0);

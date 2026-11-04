@@ -102,7 +102,7 @@ Por eso la interfaz **avisa cuando los plazos difieren**.
 ## Datos técnicos
 
 - Motor: TypeScript puro, sin dependencias
-- Tests: 41 en el motor (casos reales validados + formato y parseo), 45 en la capa compartida y 9 en la web
+- Tests: 44 en el motor (casos reales validados + formato y parseo), 46 en la capa compartida y 9 en la web
 - Precisión TAE: 10 decimales (búsqueda binaria)
 - Amortización: Sistema francés (cuota constante)
 

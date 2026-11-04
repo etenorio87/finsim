@@ -1,0 +1,76 @@
+<StackLayout>
+  <GridLayout columns="*, auto" class="intro intro-positive">
+    <StackLayout col="0">
+      <Label text="💰 Amortización parcial" class="titulo"></Label>
+      <Label text="Adelanta capital para deber menos. En general, reducir plazo ahorra más; reducir cuota da más margen cada mes." class="subtitulo" textWrap="true"></Label>
+    </StackLayout>
+    <Label col="1" text="×" (tap)="alCerrar()" class="cerrar" [accessible]="true" accessibilityLabel="Cerrar amortización parcial" accessibilityRole="button"></Label>
+  </GridLayout>
+
+  @if (store.formulario(); as form) {
+    <StackLayout [formGroup]="form" class="tarjeta borde-primary">
+      <Label text="Parámetros de la amortización" class="titulo-tarjeta"></Label>
+
+      <Label text="Cantidad a amortizar (€)" class="etiqueta"></Label>
+      <fs-campo-decimal formControlName="capitalAmortizado" modo="importe" placeholder="1000"></fs-campo-decimal>
+
+      <Label [text]="'¿En qué cuota? (1 a ' + origen().condiciones.numeroCuotas + ')'" class="etiqueta" textWrap="true"></Label>
+      <fs-campo-decimal formControlName="cuotaAmortizacion" modo="entero" placeholder="6"></fs-campo-decimal>
+
+      <Label text="Estrategia" class="etiqueta"></Label>
+      @for (e of estrategias; track e.valor) {
+        <StackLayout (tap)="elegirEstrategia(e.valor)"
+          [class]="form.controls.estrategia.value === e.valor ? 'estrategia estrategia-activa' : 'estrategia'"
+          [accessible]="true" accessibilityRole="radioButton"
+          [accessibilityState]="form.controls.estrategia.value === e.valor ? 'checked' : 'unchecked'">
+          <Label [text]="(form.controls.estrategia.value === e.valor ? '◉  ' : '○  ') + e.titulo" class="negrita"></Label>
+          <Label [text]="e.texto" class="ayuda" textWrap="true"></Label>
+        </StackLayout>
+      }
+
+      @if (store.error(); as error) {
+        <Label [text]="error" class="aviso-error" textWrap="true"></Label>
+      }
+
+      <Button text="Simular amortización parcial" (tap)="simular()" class="boton boton-accent"></Button>
+    </StackLayout>
+  }
+
+  @if (store.resultado(); as r) {
+    <StackLayout class="tarjeta borde-positive">
+      <Label text="Tu ahorro" class="titulo-tarjeta"></Label>
+      <GridLayout columns="*, 8, *" rows="auto, 8, auto" class="costes">
+        <StackLayout row="0" col="0" class="coste">
+          <Label text="Ahorro en intereses" class="etiqueta-coste"></Label>
+          <Label [text]="r.ahorro.intereses | moneda" class="valor-coste texto-positive"></Label>
+        </StackLayout>
+        <StackLayout row="0" col="2" class="coste">
+          <Label text="Ahorro en coste total" class="etiqueta-coste"></Label>
+          <Label [text]="r.ahorro.costeTotal | moneda" class="valor-coste texto-positive"></Label>
+        </StackLayout>
+        <StackLayout row="2" col="0" class="coste">
+          <Label text="Reducción de TAE" class="etiqueta-coste"></Label>
+          <Label [text]="r.ahorro.diferenciaAhorroTAE | porcentaje" class="valor-coste texto-accent"></Label>
+        </StackLayout>
+        @if (r.ahorro.cuotasEliminadas !== undefined) {
+          <StackLayout row="2" col="2" class="coste">
+            <Label text="Cuotas eliminadas" class="etiqueta-coste"></Label>
+            <Label [text]="r.ahorro.cuotasEliminadas" class="valor-coste texto-accent"></Label>
+          </StackLayout>
+        }
+        @if (r.ahorro.reduccionCuota !== undefined) {
+          <StackLayout row="2" col="2" class="coste">
+            <Label text="Reducción de cuota" class="etiqueta-coste"></Label>
+            <Label [text]="r.ahorro.reduccionCuota | moneda" class="valor-coste texto-positive"></Label>
+          </StackLayout>
+        }
+      </GridLayout>
+      <Label [text]="'Has ahorrado ' + (r.ahorro.intereses | moneda) + ' en intereses amortizando anticipadamente'" class="ayuda centrado" textWrap="true"></Label>
+    </StackLayout>
+
+    <fs-resultado-financiacion [resultado]="r.escenarioOriginal" [condiciones]="origen().condiciones"
+      etiqueta="Situación actual" acento="primary"></fs-resultado-financiacion>
+    <fs-resultado-financiacion [resultado]="r.escenarioNuevo" [condiciones]="r.condicionesNuevas"
+      etiqueta="Después de amortizar" acento="positive" [esGanadora]="true" textoDistintivo="Nuevo escenario"></fs-resultado-financiacion>
+  }
+</StackLayout>
