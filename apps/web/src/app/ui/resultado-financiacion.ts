@@ -19,6 +19,8 @@ const ESTILOS: Record<AcentoResultado, { borde: string; texto: string; fondo: st
 
 @Component({
   selector: 'fs-resultado-financiacion',
+  // Los elementos propios son inline: sin esto se ignoran márgenes como space-y-*
+  host: { class: 'block' },
   imports: [MonedaPipe, PorcentajePipe],
   templateUrl: './resultado-financiacion.html',
 })

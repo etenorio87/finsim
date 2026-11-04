@@ -26,6 +26,8 @@ let siguienteId = 0;
 
 @Component({
   selector: 'fs-formulario-condiciones',
+  // Los elementos propios son inline: sin esto se ignoran márgenes como space-y-*
+  host: { class: 'block' },
   imports: [ReactiveFormsModule, CampoDecimalComponent],
   templateUrl: './formulario-condiciones.html',
 })

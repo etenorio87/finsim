@@ -10,6 +10,8 @@ import { CampoDecimalBase } from '@finsim/shared';
 
 @Component({
   selector: 'fs-campo-decimal',
+  // Los elementos propios son inline: sin esto se ignoran márgenes como space-y-*
+  host: { class: 'block' },
   template: `
     <input
       type="text"
