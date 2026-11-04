@@ -55,6 +55,9 @@ for (const { size, scale, filename } of iconosIos) {
   redimensionar(cuadrado, lado, join(IOS, 'AppIcon.appiconset', filename), ['-alpha', 'off']);
 }
 
+// Google Play: icono de la ficha (512 px, cuadrado: la tienda aplica la máscara)
+redimensionar(cuadrado, 512, join(MOVIL, 'tienda/icono-512.png'), ['-alpha', 'off']);
+
 // iOS: pantalla de arranque = fondo liso + icono de 120 pt en el centro
 for (const [sufijo, escala] of [['', 1], ['@2x', 2], ['@3x', 3]]) {
   redimensionar(redondeado, 120 * escala, join(IOS, `LaunchScreen.Center.imageset/LaunchScreen-Center${sufijo}.png`));

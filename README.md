@@ -155,7 +155,7 @@ finsim/
 - [x] **Fase 4** — Prueba técnica de NativeScript (exportación y compartir archivos)
 - [x] **Fase 5** — `apps/mobile`: app nativa sobre `libs/shared`
 - [x] **Fase 6** — Pulido: iconos, pantalla de arranque, accesibilidad y rendimiento del cuadro
-- [ ] **Fase 7** — Pruebas en dispositivos reales y publicación en App Store y Google Play
+- [ ] **Fase 7** — Pruebas en dispositivos reales y publicación en App Store y Google Play ([preparación lista](apps/mobile/tienda/README.md): falta firmar y subir)
 
 El historial de cambios está en [CHANGELOG.md](CHANGELOG.md).
 

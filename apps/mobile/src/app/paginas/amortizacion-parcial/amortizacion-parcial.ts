@@ -3,11 +3,12 @@
  * Se abre desde "Simular financiación" para el préstamo simulado.
  */
 
-import { Component, NO_ERRORS_SCHEMA, effect, inject, input, output, untracked } from '@angular/core';
+import { Component, ElementRef, NO_ERRORS_SCHEMA, effect, inject, input, output, untracked } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Utils } from '@nativescript/core';
+import { Utils, type View } from '@nativescript/core';
 import { AmortizacionParcialStore, MonedaPipe, PorcentajePipe, type OrigenAmortizacion } from '@finsim/shared';
 import { anunciar, moneda } from '../../plataforma/accesibilidad';
+import { prepararCaptura } from '../../capturas';
 import { CampoDecimalComponent } from '../../ui/campo-decimal';
 import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion';
 
@@ -18,6 +19,8 @@ import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion'
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class AmortizacionParcialComponent {
+  private readonly vista = inject<ElementRef<View>>(ElementRef);
+
   protected readonly store = inject(AmortizacionParcialStore);
 
   readonly origen = input.required<OrigenAmortizacion>();
@@ -29,6 +32,7 @@ export class AmortizacionParcialComponent {
   ] as const;
 
   constructor() {
+    prepararCaptura(['amortizacion'], () => this.simular(), () => this.vista.nativeElement);
     // Si cambia el préstamo simulado, el panel se actualiza conservando lo escrito
     // (untracked: abrir() lee el estado del store y no debe convertirse en dependencia)
     effect(() => {

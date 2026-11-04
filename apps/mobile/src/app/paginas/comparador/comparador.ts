@@ -2,10 +2,11 @@
  * "Comparar ofertas": gana la de menor TAE, con aviso si los plazos difieren (#5).
  */
 
-import { Component, NO_ERRORS_SCHEMA, computed, inject } from '@angular/core';
-import { Utils } from '@nativescript/core';
+import { Component, ElementRef, NO_ERRORS_SCHEMA, computed, inject } from '@angular/core';
+import { Utils, type View } from '@nativescript/core';
 import { ComparadorStore, PorcentajePipe } from '@finsim/shared';
 import { anunciar, porcentaje } from '../../plataforma/accesibilidad';
+import { prepararCaptura } from '../../capturas';
 import { ContenedorEnfocableDirective } from '../../ui/contenedor-enfocable';
 import { FormularioCondicionesComponent } from '../../ui/formulario-condiciones';
 import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion';
@@ -18,11 +19,17 @@ import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion'
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class ComparadorComponent {
+  private readonly vista = inject<ElementRef<View>>(ElementRef);
+
   protected readonly store = inject(ComparadorStore);
 
   protected readonly textoDistintivo = computed(() =>
     this.store.comparacion()?.avisoPlazosDistintos ? 'Dinero más barato' : 'Mejor oferta',
   );
+
+  constructor() {
+    prepararCaptura(['comparar'], () => this.comparar(), () => this.vista.nativeElement);
+  }
 
   protected comparar(): void {
     Utils.dismissSoftInput();

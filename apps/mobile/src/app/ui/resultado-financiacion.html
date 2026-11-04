@@ -1,5 +1,5 @@
 @let r = resultado();
-<StackLayout [class]="esGanadora() ? 'tarjeta borde-' + acento() : 'tarjeta'">
+<StackLayout id="captura" [class]="esGanadora() ? 'tarjeta borde-' + acento() : 'tarjeta'">
   @if (etiqueta(); as titulo) {
     <GridLayout columns="*, auto" class="cabecera-resultado">
       <Label col="0" [text]="titulo" class="titulo-tarjeta" accessibilityRole="header" textWrap="true"></Label>
