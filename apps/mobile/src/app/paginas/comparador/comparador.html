@@ -1,0 +1,38 @@
+<ScrollView>
+  <StackLayout fsContenedorEnfocable class="pagina">
+    <StackLayout class="intro intro-primary">
+      <Label text="¿Cuál de estas dos ofertas es mejor?" class="titulo" textWrap="true"></Label>
+      <Label text="El criterio de decisión es la TAE (el precio real del dinero), no la cuota mensual." class="subtitulo" textWrap="true"></Label>
+    </StackLayout>
+
+    <fs-formulario-condiciones [formulario]="store.formularioA" titulo="Oferta A" letra="A" acento="primary"></fs-formulario-condiciones>
+    <fs-formulario-condiciones [formulario]="store.formularioB" titulo="Oferta B" letra="B" acento="accent"></fs-formulario-condiciones>
+
+    <Button text="Comparar ofertas" (tap)="comparar()" class="boton boton-principal"></Button>
+
+    @if (store.comparacion(); as comparacion) {
+      <StackLayout class="tarjeta tarjeta-veredicto">
+        <Label [text]="store.titulo()" class="veredicto" textWrap="true"></Label>
+        <Label text="Diferencia de TAE" class="etiqueta-coste"></Label>
+        <Label [text]="comparacion.diferenciaTae | porcentaje" class="valor-coste texto-primary"></Label>
+
+        @if (store.avisoPlazos(); as aviso) {
+          <StackLayout class="aviso">
+            <Label text="⚠️ Atención: los plazos son diferentes" class="negrita" textWrap="true"></Label>
+            <Label [text]="aviso" textWrap="true"></Label>
+            <Label text="Compara el coste financiero total en las tarjetas de abajo." textWrap="true" class="aviso-pie"></Label>
+          </StackLayout>
+        }
+      </StackLayout>
+
+      @if (store.resultadoA(); as a) {
+        <fs-resultado-financiacion [resultado]="a" [condiciones]="store.condicionesA()" etiqueta="Oferta A"
+          acento="primary" [esGanadora]="comparacion.ganadora === 'a'" [textoDistintivo]="textoDistintivo()"></fs-resultado-financiacion>
+      }
+      @if (store.resultadoB(); as b) {
+        <fs-resultado-financiacion [resultado]="b" [condiciones]="store.condicionesB()" etiqueta="Oferta B"
+          acento="accent" [esGanadora]="comparacion.ganadora === 'b'" [textoDistintivo]="textoDistintivo()"></fs-resultado-financiacion>
+      }
+    }
+  </StackLayout>
+</ScrollView>

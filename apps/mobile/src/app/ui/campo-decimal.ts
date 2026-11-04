@@ -21,7 +21,9 @@ import { CampoDecimalBase } from '@finsim/shared';
       (focus)="enfocar($any($event))"
       (textChange)="alCambiar($any($event))"
       (blur)="alSalir()"
-      class="campo"
+      returnKeyType="done"
+      (returnPress)="confirmar($any($event))"
+      [class]="clases()"
     ></TextField>
   `,
   schemas: [NO_ERRORS_SCHEMA],
@@ -29,6 +31,13 @@ import { CampoDecimalBase } from '@finsim/shared';
 })
 export class CampoDecimalComponent extends CampoDecimalBase {
   readonly placeholder = input('');
+  readonly invalido = input(false);
+  /** Estilo compacto para campos secundarios (comisiones). */
+  readonly compacto = input(false);
+
+  protected clases(): string {
+    return `campo${this.compacto() ? ' campo-compacto' : ''}${this.invalido() ? ' campo-invalido' : ''}`;
+  }
 
   protected alCargar({ object }: EventData): void {
     const campo = object as TextField;
@@ -62,7 +71,17 @@ export class CampoDecimalComponent extends CampoDecimalBase {
     });
   }
 
+  /**
+   * Se comunica cada pulsación al formulario: en Android, cerrar el teclado
+   * (atrás) no quita el foco, y sin esto el resultado no se actualizaría.
+   */
   protected alCambiar({ object }: EventData): void {
-    if (this.enFoco()) this.alEscribir((object as TextField).text ?? '');
+    if (this.enFoco()) this.alEscribir((object as TextField).text ?? '', true);
+  }
+
+  /** "Hecho" en el teclado: lo cierra y sale del campo (se aplica el formato). */
+  protected confirmar({ object }: EventData): void {
+    (object as TextField).dismissSoftInput();
+    this.alSalir();
   }
 }

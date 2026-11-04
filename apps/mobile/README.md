@@ -2,7 +2,29 @@
 
 App nativa de FinSim para iOS y Android: **NativeScript 9 + Angular 22** sobre `@finsim/shared`. La app solo aporta las vistas (elementos nativos) y la integración con cada plataforma; el estado, los formularios, el formato y la exportación son los mismos que usa la web.
 
-> Estado: **prueba técnica (Fase 4)**. Hay una única pantalla, el simulador, que valida la arquitectura. La app completa se construye en la Fase 5.
+> Estado: **las cuatro funcionalidades de la web** (Fase 5). Pendiente: iconos, pantalla de arranque y pruebas en dispositivos (Fase 6).
+
+## Estructura
+
+```
+src/app/
+├── inicio.ts                    # pestañas: Simular, Comparar, Contado
+├── paginas/
+│   ├── simulador/               # simulación + amortización parcial
+│   ├── amortizacion-parcial/
+│   ├── comparador/
+│   └── contado/
+├── ui/
+│   ├── campo-decimal.ts         # TextField sobre CampoDecimalBase
+│   ├── selector.ts              # opciones (frecuencia, comisión…), igual en iOS y Android
+│   ├── formulario-condiciones.* # importe, cuotas, frecuencia, TIN y comisiones
+│   ├── resultado-financiacion.* # TAE, cuota, costes, cuadro y exportación
+│   └── contenedor-enfocable.ts  # Android: evita que el foco salte al primer campo
+├── plataforma/compartir-archivo.ts  # guardar y abrir el menú de compartir
+└── diagnostico.ts               # modo diagnóstico del runtime
+```
+
+Cada pestaña tiene su propio store (de `@finsim/shared`): cambiar de pestaña no pierde lo escrito.
 
 ## Desarrollo
 
@@ -15,6 +37,8 @@ npx nx run @finsim/mobile:typecheck
 ```
 
 En Xcode 27 el simulador se ve en **DeviceHub** (`Xcode.app/Contents/Applications/DeviceHub.app`). Si el teclado del Mac está conectado al simulador, iOS no muestra el teclado en pantalla: **Device → Keyboard → Toggle Software Keyboard**.
+
+Si al abrir una pantalla en Android aparece vacía y el log muestra `ClassNotFoundException: ...FragmentBase_vendor_...`, la compilación incremental dejó clases Java desactualizadas: `npx ns clean` (o `ns build android --clean`).
 
 ### Modo diagnóstico
 
@@ -48,9 +72,30 @@ Probado en el simulador de iOS (iPhone 15 Pro) y en el emulador de Android (API 
 | Foco en Android | Al cerrar el teclado, Android da el foco al primer campo y lo deja en modo edición. Se evita haciendo enfocable el contenedor de la página |
 | "Simular" con el teclado abierto | Calcula con lo que se está escribiendo: se cierra el teclado antes, lo que confirma el valor. Comprobado en iOS y Android |
 
-### Pendiente para la Fase 5
+### Resuelto en la Fase 5
 
+- Separador de miles: `parseDecimal` entiende `1.234,56` y `1,234.56` (el último separador es el decimal).
+- `SegmentedBar` sustituido por un selector propio; sin `ActionBar` (cada pestaña tiene su cabecera).
+- Directiva `fsContenedorEnfocable` en todas las pantallas.
+- El campo comunica el valor mientras se escribe: en Android, cerrar el teclado con "atrás" no quita el foco y el resultado no se actualizaba. "Hecho" en el teclado sale del campo.
+
+## Verificación de la Fase 5
+
+Android (emulador, interacción automatizada con `adb`), mismas cifras que la web en la Fase 3:
+
+| Flujo | Resultado |
+|---|---|
+| Simular (10.000 €, 24 meses, 6 %) | TAE 6,17 %, cuota 443,21 €, coste 636,95 €, saldo medio 5307,89 €; cuadro de 24 filas |
+| Comisión de 100 € | TAE 7,21 % (igual que el motor en Node), sin salir del campo |
+| Amortización parcial 1000 € en la cuota 6 | Reducir plazo: 82,16 € de ahorro; reducir cuota: 48,17 € y cuota 58,23 € menor |
+| Comparar | "Mejor oferta: A"; con plazos distintos, "Dinero más barato: B" y "estarás endeudado 3 años más" |
+| Contado | "Conviene FINANCIAR, ganas 4,03 %"; con 2 % bruto, "Mejor pagar AL CONTADO, pierdes 2,45 %" |
+| Validación | Importe 0 → "Debe ser mayor que 0" y el resultado se oculta |
+
+iOS (simulador): las cuatro pantallas se muestran correctamente; la interacción se prueba a mano.
+
+### Pendiente (Fase 6)
+
+- Iconos de las pestañas, icono de la app y pantalla de arranque.
 - Probar en dispositivos reales: recibir el archivo en Mail, WhatsApp o Archivos.
-- Separador de miles al escribir: en Android se pueden teclear `.` y `,` a la vez (`1.234,56` se interpreta como 1,23 €). Con el teclado decimal de iOS no ocurre.
-- Estilo de `SegmentedBar` en Android (azul por defecto, corta "TRIMESTRAL") y título de la `ActionBar`.
-- Una directiva para el "contenedor enfocable", que ahora está en la pantalla del simulador.
+- Rendimiento del cuadro con muchas cuotas (360 filas = 1800 etiquetas).

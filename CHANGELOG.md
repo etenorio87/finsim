@@ -2,6 +2,13 @@
 
 ## Migración a plataforma Angular
 
+### 04/11/2026 — Fase 5: app móvil completa
+
+- `@finsim/mobile` con las cuatro funcionalidades de la web en tres pestañas: Simular (con amortización parcial), Comparar y Contado. Mismas cifras que la web, verificadas en Android
+- Componentes nativos: formulario de condiciones con comisiones, tarjeta de resultado con cuadro y exportación, selector de opciones propio (igual en iOS y Android)
+- **Separador de miles al escribir**: `parseDecimal("1.234,56")` → 1234,56 (antes 1,234). Con un único separador sigue siendo decimal: `"9854.64"` → 9854,64
+- Campo decimal en el móvil: comunica el valor mientras se escribe (en Android, cerrar el teclado no quita el foco) y "Hecho" sale del campo. Opción `notificar` en `CampoDecimalBase.alEscribir`; la web no cambia
+
 ### 04/11/2026 — Fase 4: prueba técnica de NativeScript
 
 - Nueva app `@finsim/mobile` (NativeScript 9 + Angular 22, sin zone.js) con la pantalla del simulador sobre `@finsim/shared`. Probada en el simulador de iOS y el emulador de Android: cálculo, formato, Excel, PDF y menú de compartir. Resultados en [apps/mobile/README.md](apps/mobile/README.md)

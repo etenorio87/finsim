@@ -1,47 +1,24 @@
-<ActionBar title="FinSim"></ActionBar>
-
 <ScrollView>
-  <StackLayout class="pagina" (loaded)="contenedorEnfocable($any($event))">
-    <Label text="Simula tu financiación" class="titulo"></Label>
-    <Label text="El precio del dinero es la TAE, no la cuota." class="subtitulo" textWrap="true"></Label>
-
-    <StackLayout [formGroup]="store.formulario" class="tarjeta">
-      <Label text="Importe (€)" class="etiqueta"></Label>
-      <fs-campo-decimal formControlName="importe" modo="importe"></fs-campo-decimal>
-
-      <Label text="Número de cuotas" class="etiqueta"></Label>
-      <fs-campo-decimal formControlName="numeroCuotas" modo="entero"></fs-campo-decimal>
-
-      <Label text="Frecuencia" class="etiqueta"></Label>
-      <SegmentedBar [selectedIndex]="indiceFrecuencia()" (selectedIndexChange)="cambiarFrecuencia($any($event).value)">
-        @for (f of frecuencias; track f.valor) {
-          <SegmentedBarItem [title]="f.etiqueta"></SegmentedBarItem>
-        }
-      </SegmentedBar>
-
-      <Label text="TIN anual (%)" class="etiqueta"></Label>
-      <fs-campo-decimal formControlName="tin" modo="porcentaje"></fs-campo-decimal>
+  <StackLayout fsContenedorEnfocable class="pagina">
+    <StackLayout class="intro intro-primary">
+      <Label text="Simula tu financiación" class="titulo"></Label>
+      <Label text="Introduce las condiciones y descubre el coste real. El precio del dinero es la TAE, no la cuota." class="subtitulo" textWrap="true"></Label>
     </StackLayout>
+
+    <fs-formulario-condiciones [formulario]="store.formulario" titulo="Condiciones de la financiación" letra="F" acento="primary"></fs-formulario-condiciones>
 
     <Button text="Simular financiación" (tap)="simular()" class="boton boton-principal"></Button>
 
-    @if (store.resultado(); as r) {
-      <StackLayout class="tarjeta">
-        <Label text="TAE (precio real del dinero)" class="etiqueta"></Label>
-        <Label [text]="r.tae | porcentaje" class="tae"></Label>
-        <Label text="Cuota" class="etiqueta"></Label>
-        <Label [text]="(r.cuota | moneda) + ' cada ' + periodo[store.condiciones().frecuencia]" class="cuota"></Label>
-        <Label [text]="'Coste financiero: ' + (r.costeFinanciero | moneda)" class="detalle"></Label>
-        <Label [text]="'Coste total: ' + (r.costeTotal | moneda)" class="detalle"></Label>
+    @if (store.resultado(); as resultado) {
+      <fs-resultado-financiacion [resultado]="resultado" [condiciones]="store.condiciones()" acento="primary"></fs-resultado-financiacion>
 
-        <GridLayout columns="*, 8, *" class="exportar">
-          <Button col="0" [text]="exportando() === 'excel' ? 'Generando…' : 'Excel'" (tap)="exportar('excel')" class="boton boton-excel"></Button>
-          <Button col="2" [text]="exportando() === 'pdf' ? 'Generando…' : 'PDF'" (tap)="exportar('pdf')" class="boton boton-pdf"></Button>
-        </GridLayout>
-        @if (error(); as e) {
-          <Label [text]="e" class="error" textWrap="true"></Label>
+      @if (store.amortizacionAbierta()) {
+        @if (origen(); as o) {
+          <fs-amortizacion-parcial [origen]="o" (cerrar)="store.cerrarAmortizacion()"></fs-amortizacion-parcial>
         }
-      </StackLayout>
+      } @else {
+        <Button text="💰 Simular amortización parcial" (tap)="store.abrirAmortizacion()" class="boton boton-accent"></Button>
+      }
     }
   </StackLayout>
 </ScrollView>

@@ -72,8 +72,14 @@ export abstract class CampoDecimalBase implements ControlValueAccessor {
     this.enFoco.set(true);
   }
 
-  alEscribir(texto: string): void {
+  /**
+   * Guarda lo escrito. Con `notificar`, además lo comunica al formulario sin
+   * esperar a salir del campo (el texto no se reformatea hasta alSalir).
+   * El móvil lo necesita: en Android, cerrar el teclado no quita el foco.
+   */
+  alEscribir(texto: string, notificar = false): void {
     this.textoEnEdicion.set(texto);
+    if (notificar) this.onChange(valorDesdeTexto(texto, this.modo()));
   }
 
   /** Al salir se interpreta el texto y se notifica al formulario. */

@@ -13,10 +13,26 @@ export function normalizarDecimal(valor: string): string {
 }
 
 /**
- * Parsea un string a número aceptando coma o punto como separador decimal
+ * Parsea un string a número aceptando coma o punto como separador decimal.
+ *
+ * Separador de miles: si aparecen los dos ("1.234,56", "1,234.56"), el último
+ * es el decimal y el otro se ignora; si uno se repite ("1.234.567"), son miles.
+ * Un único separador es siempre decimal: "9854.64" → 9854.64 (regresión #2).
  */
 export function parseDecimal(valor: string): number {
-  const normalizado = normalizarDecimal(valor);
+  const texto = valor.trim();
+  const ultimoPunto = texto.lastIndexOf('.');
+  const ultimaComa = texto.lastIndexOf(',');
+  let normalizado: string;
+  if (ultimoPunto >= 0 && ultimaComa >= 0) {
+    const decimal = ultimoPunto > ultimaComa ? '.' : ',';
+    const miles = decimal === '.' ? ',' : '.';
+    normalizado = texto.split(miles).join('').replace(decimal, '.');
+  } else {
+    const separador = ultimoPunto >= 0 ? '.' : ',';
+    const veces = texto.split(separador).length - 1;
+    normalizado = veces > 1 ? texto.split(separador).join('') : normalizarDecimal(texto);
+  }
   const numero = parseFloat(normalizado);
   return isNaN(numero) ? 0 : numero;
 }

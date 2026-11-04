@@ -24,10 +24,10 @@ FinSim es una **plataforma Angular multiplataforma**: un único motor de cálcul
 
 | Componente | Tecnología | Estado |
 |---|---|---|
-| Motor de cálculo `@finsim/core` | TypeScript puro | ✅ Estable, 37 tests |
-| Capa compartida `@finsim/shared` | Angular 22 | ✅ Lista, 45 tests; la usarán las apps Angular |
+| Motor de cálculo `@finsim/core` | TypeScript puro | ✅ Estable, 44 tests |
+| Capa compartida `@finsim/shared` | Angular 22 | ✅ Usada por la web y el móvil, 46 tests |
 | Web `@finsim/web` | Angular 22 + Tailwind v4 | ✅ En producción, 9 tests |
-| App móvil `@finsim/mobile` | NativeScript 9 + Angular 22 | 🧪 Prueba técnica superada en iOS y Android ([resultados](apps/mobile/README.md)) |
+| App móvil `@finsim/mobile` | NativeScript 9 + Angular 22 | ✅ Las cuatro funcionalidades en iOS y Android ([detalles](apps/mobile/README.md)); falta publicar |
 
 La primera versión, en React, queda etiquetada como [`v1-react`](https://github.com/etenorio87/finsim/tree/v1-react).
 
@@ -38,7 +38,7 @@ flowchart TD
     core["@finsim/core<br/>motor de cálculo · TypeScript puro, sin DOM"]
     shared["libs/shared<br/>servicios, formularios, pipes, exportación · Angular"]
     web["apps/web<br/>web · Angular + Tailwind"]
-    mobile["apps/mobile<br/>iOS / Android · NativeScript + Angular<br/>(prueba técnica)"]
+    mobile["apps/mobile<br/>iOS / Android · NativeScript + Angular"]
 
     core --> shared
     shared --> web
@@ -138,7 +138,7 @@ finsim/
 │   │   │   └── plataforma/          # descarga de archivos en el navegador
 │   │   └── tools/preview-pages.mjs  # vista previa que imita a GitHub Pages
 │   └── mobile/                  # @finsim/mobile — app NativeScript (iOS y Android)
-│       ├── src/app/                 # pantallas, campo decimal nativo, compartir archivos
+│       ├── src/app/                 # pestañas, pantallas, componentes nativos, compartir archivos
 │       └── App_Resources/           # iconos, splash y configuración nativa
 ├── .github/workflows/
 │   ├── ci.yml                   # test + typecheck + build en cada PR
@@ -153,7 +153,7 @@ finsim/
 - [x] **Fase 2** — `apps/web`: web Angular con las cuatro funcionalidades
 - [x] **Fase 3** — Verificación de paridad con la web React y cambio del despliegue
 - [x] **Fase 4** — Prueba técnica de NativeScript (exportación y compartir archivos)
-- [ ] **Fase 5** — `apps/mobile`: app nativa sobre `libs/shared`
+- [x] **Fase 5** — `apps/mobile`: app nativa sobre `libs/shared`
 - [ ] **Fase 6** — Pulido: iconos, splash, accesibilidad, pruebas en dispositivos
 - [ ] **Fase 7** — Publicación en App Store y Google Play
 

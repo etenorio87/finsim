@@ -65,6 +65,20 @@ describe('CampoDecimalBase (ControlValueAccessor)', () => {
     expect(campo.valorActual).toBe(9854.64);
   });
 
+  it('con notificar, emite mientras escribe sin reformatear el texto', () => {
+    const campo = crearCampo();
+    const emitidos: number[] = [];
+    campo.registerOnChange((v) => emitidos.push(v));
+    campo.writeValue(10000);
+    campo.alEnfocar();
+
+    campo.alEscribir('2', true);
+    campo.alEscribir('25', true);
+    campo.alEscribir('25,5', true);
+    expect(emitidos).toEqual([2, 25, 25.5]);
+    expect(campo.texto()).toBe('25,5');
+  });
+
   it('salir sin haber entrado no emite', () => {
     const campo = crearCampo();
     const emitidos: number[] = [];
