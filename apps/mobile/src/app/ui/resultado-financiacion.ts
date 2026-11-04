@@ -5,10 +5,12 @@
  * 3) costes pequeños. La TAE decide; la cuota es una restricción de presupuesto.
  */
 
-import { Component, NO_ERRORS_SCHEMA, ViewContainerRef, computed, inject, input, signal } from '@angular/core';
+import { Component, ElementRef, NO_ERRORS_SCHEMA, ViewContainerRef, computed, inject, input, signal } from '@angular/core';
 import { ModalDialogService } from '@nativescript/angular';
+import type { View } from '@nativescript/core';
 import type { Condiciones, Resultado } from '@finsim/core';
 import { ExportacionService, MonedaPipe, PorcentajePipe, TEXTO_PERIODO } from '@finsim/shared';
+import { prepararCaptura } from '../capturas';
 import { CuadroAmortizacionComponent, type ContextoCuadro } from './cuadro-amortizacion';
 
 export type AcentoResultado = 'primary' | 'accent' | 'positive';
@@ -21,6 +23,8 @@ export type AcentoResultado = 'primary' | 'accent' | 'positive';
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class ResultadoFinanciacionComponent {
+  private readonly vista = inject<ElementRef<View>>(ElementRef);
+
   private readonly exportacion = inject(ExportacionService);
   private readonly modales = inject(ModalDialogService);
   private readonly contenedor = inject(ViewContainerRef);
@@ -35,6 +39,10 @@ export class ResultadoFinanciacionComponent {
   protected readonly periodo = computed(() => TEXTO_PERIODO[this.condiciones().frecuencia]);
   protected readonly exportando = signal<'excel' | 'pdf' | null>(null);
   protected readonly errorExportacion = signal<string | null>(null);
+
+  constructor() {
+    prepararCaptura(['cuadro'], () => this.verCuadro(), () => this.vista.nativeElement);
+  }
 
   protected verCuadro(): void {
     const filas = this.resultado().cuadro;

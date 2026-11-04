@@ -2,21 +2,20 @@
  * Diagnóstico del runtime (prueba técnica, Fase 4). Se ejecuta solo si la app
  * se lanza con FINSIM_DIAGNOSTICO (variable de entorno en iOS, extra del intent en Android):
  *
- *   SIMCTL_CHILD_FINSIM_DIAGNOSTICO=1 xcrun simctl launch --console-pty <sim> com.etenorio87.finsim
+ *   SIMCTL_CHILD_FINSIM_DIAGNOSTICO=1 xcrun simctl launch --console-pty <sim> com.etenoriod.finsim
  *
- *   adb shell am start -n com.etenorio87.finsim/com.tns.NativeScriptActivity --es FINSIM_DIAGNOSTICO 1
+ *   adb shell am start -n com.etenoriod.finsim/com.tns.NativeScriptActivity --es FINSIM_DIAGNOSTICO 1
  *
  * Escribe cada comprobación en la consola con el prefijo [diag].
  */
 
-import { Application, File, isIOS, knownFolders, path } from '@nativescript/core';
+import { File, knownFolders, path } from '@nativescript/core';
 import { calcular, formatearMoneda, formatearPorcentaje } from '@finsim/core';
 import { CONDICIONES_SIMULADOR, generarExcel, generarPdf } from '@finsim/shared';
+import { argumentoArranque } from './plataforma/arranque';
 
 export function diagnosticoActivado(): boolean {
-  if (isIOS) return !!NSProcessInfo.processInfo.environment.objectForKey('FINSIM_DIAGNOSTICO');
-  const actividad = Application.android.foregroundActivity ?? Application.android.startActivity;
-  return !!actividad?.getIntent()?.getStringExtra('FINSIM_DIAGNOSTICO');
+  return !!argumentoArranque('FINSIM_DIAGNOSTICO');
 }
 
 export async function ejecutarDiagnostico(

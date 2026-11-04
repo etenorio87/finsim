@@ -1,4 +1,4 @@
-<ScrollView>
+<ScrollView iosOverflowSafeArea="false">
   <StackLayout fsContenedorEnfocable class="pagina">
     <StackLayout class="intro intro-primary">
       <Label text="¿Cuál de estas dos ofertas es mejor?" class="titulo" accessibilityRole="header" textWrap="true"></Label>
@@ -11,7 +11,7 @@
     <Button text="Comparar ofertas" (tap)="comparar()" class="boton boton-principal"></Button>
 
     @if (store.comparacion(); as comparacion) {
-      <StackLayout class="tarjeta tarjeta-veredicto">
+      <StackLayout id="captura" class="tarjeta tarjeta-veredicto">
         <Label [text]="store.titulo()" class="veredicto" accessibilityRole="header" textWrap="true"></Label>
         <Label text="Diferencia de TAE" class="etiqueta-coste"></Label>
         <Label [text]="comparacion.diferenciaTae | porcentaje" class="valor-coste texto-primary"></Label>

@@ -2,6 +2,15 @@
 
 ## Migración a plataforma Angular
 
+### 04/11/2026 — Fase 7: preparación para publicar
+
+- **Identificador definitivo `com.etenoriod.finsim`**, versión 1.0.0
+- **Política de privacidad** en https://etenorio87.github.io/finsim/privacidad.html: FinSim no recoge datos
+- iOS: manifiesto de privacidad, declaración de cifrado, solo iPhone y en vertical, textos del sistema en español
+- **Ficha de las tiendas** (nombre "FinSim: Simulador TAE", descripción, palabras clave, respuestas de privacidad y clasificación) y **capturas de 6,9"** en `apps/mobile/tienda`, regenerables con `tools/capturas.sh` gracias a un modo captura
+- **Corregido: en iOS, al desplazarse, el contenido pasaba por debajo de la barra de estado** y se solapaba con la hora
+- Versiones de publicación probadas en iOS (simulador) y Android (APK firmado): Android arranca en 2,5 s
+
 ### 04/11/2026 — Fase 6: pulido de la app móvil
 
 - **Icono de FinSim** (el "%" con el degradado del favicon) en iOS y Android, con icono adaptativo y temático en Android, y **pantalla de arranque** con el fondo de la app. Se generan desde `apps/mobile/recursos/icono.svg` con `tools/generar-recursos.mjs`

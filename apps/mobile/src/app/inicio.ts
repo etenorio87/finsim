@@ -6,6 +6,7 @@
 import { Component, NO_ERRORS_SCHEMA, inject } from '@angular/core';
 import { TabViewDirective, TabViewItemDirective } from '@nativescript/angular';
 import { Page, isIOS } from '@nativescript/core';
+import { pestanaCaptura } from './capturas';
 import { ComparadorComponent } from './paginas/comparador/comparador';
 import { ContadoComponent } from './paginas/contado/contado';
 import { SimuladorComponent } from './paginas/simulador/simulador';
@@ -14,7 +15,7 @@ import { SimuladorComponent } from './paginas/simulador/simulador';
   selector: 'fs-inicio',
   imports: [TabViewDirective, TabViewItemDirective, SimuladorComponent, ComparadorComponent, ContadoComponent],
   template: `
-    <TabView androidTabsPosition="bottom" class="pestanas">
+    <TabView androidTabsPosition="bottom" class="pestanas" [selectedIndex]="pestanaInicial">
       <GridLayout *tabItem="{ title: 'Simular', iconSource: icono('percent', 'tab_simular'), textTransform: 'none' }"><fs-simulador></fs-simulador></GridLayout>
       <GridLayout *tabItem="{ title: 'Comparar', iconSource: icono('arrow.left.arrow.right', 'tab_comparar'), textTransform: 'none' }"><fs-comparador></fs-comparador></GridLayout>
       <GridLayout *tabItem="{ title: 'Contado', iconSource: icono('banknote', 'tab_contado'), textTransform: 'none' }"><fs-contado></fs-contado></GridLayout>
@@ -23,6 +24,9 @@ import { SimuladorComponent } from './paginas/simulador/simulador';
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class InicioComponent {
+  /** 0 salvo en modo captura (capturas.ts) */
+  protected readonly pestanaInicial = pestanaCaptura();
+
   /** iOS: símbolo del sistema (SF Symbols). Android: vector de App_Resources (mismo dibujo). */
   protected icono(simboloIos: string, recursoAndroid: string): string {
     return isIOS ? `sys://${simboloIos}` : `res://${recursoAndroid}`;

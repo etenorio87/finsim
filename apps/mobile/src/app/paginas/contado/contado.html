@@ -1,5 +1,5 @@
 @let inversion = store.formularioInversion.controls;
-<ScrollView>
+<ScrollView iosOverflowSafeArea="false">
   <StackLayout fsContenedorEnfocable class="pagina">
     <StackLayout class="intro intro-positive">
       <Label text="¿Te conviene financiar o pagar al contado?" class="titulo" accessibilityRole="header" textWrap="true"></Label>
@@ -40,7 +40,7 @@
 
     @if (store.decision(); as d) {
       @let financiar = d.recomendacion === 'financiar';
-      <StackLayout [class]="financiar ? 'tarjeta borde-positive veredicto-contado' : 'tarjeta borde-primary veredicto-contado'">
+      <StackLayout id="captura" [class]="financiar ? 'tarjeta borde-positive veredicto-contado' : 'tarjeta borde-primary veredicto-contado'">
         <Label [text]="financiar ? '✅' : '💰'" class="emoji-veredicto"></Label>
         <Label [text]="financiar ? 'Conviene FINANCIAR' : 'Mejor pagar AL CONTADO'" class="veredicto centrado" accessibilityRole="header" textWrap="true"></Label>
         <Label [text]="financiar ? 'Ganas ' + (d.diferenciaTipos | porcentaje) + ' anual financiando' : 'Pierdes ' + (-d.diferenciaTipos | porcentaje) + ' anual si financias'"

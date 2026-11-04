@@ -3,10 +3,11 @@
  * amortización parcial del préstamo simulado.
  */
 
-import { Component, NO_ERRORS_SCHEMA, computed, inject } from '@angular/core';
-import { Utils } from '@nativescript/core';
+import { Component, ElementRef, NO_ERRORS_SCHEMA, computed, inject } from '@angular/core';
+import { Utils, type View } from '@nativescript/core';
 import { AmortizacionParcialStore, SimuladorStore } from '@finsim/shared';
 import { anunciar, moneda, porcentaje } from '../../plataforma/accesibilidad';
+import { prepararCaptura } from '../../capturas';
 import { ContenedorEnfocableDirective } from '../../ui/contenedor-enfocable';
 import { FormularioCondicionesComponent } from '../../ui/formulario-condiciones';
 import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion';
@@ -20,6 +21,8 @@ import { AmortizacionParcialComponent } from '../amortizacion-parcial/amortizaci
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class SimuladorComponent {
+  private readonly vista = inject<ElementRef<View>>(ElementRef);
+
   protected readonly store = inject(SimuladorStore);
 
   /** Préstamo de origen para la amortización parcial. */
@@ -27,6 +30,13 @@ export class SimuladorComponent {
     const resultado = this.store.resultado();
     return resultado ? { condiciones: this.store.condiciones(), resultado } : null;
   });
+
+  constructor() {
+    prepararCaptura(['simular', 'cuadro', 'amortizacion'], (modo) => {
+      this.simular();
+      if (modo === 'amortizacion') this.store.abrirAmortizacion();
+    }, () => this.vista.nativeElement);
+  }
 
   protected simular(): void {
     // En iOS, tocar un botón no quita el foco del campo: sin esto se simularía

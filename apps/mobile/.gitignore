@@ -3,3 +3,7 @@ hooks/
 platforms/
 node_modules/
 *.log
+
+# Claves de firma de Android: nunca en el repositorio
+*.jks
+*.keystore

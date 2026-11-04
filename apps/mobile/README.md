@@ -2,7 +2,7 @@
 
 App nativa de FinSim para iOS y Android: **NativeScript 9 + Angular 22** sobre `@finsim/shared`. La app solo aporta las vistas (elementos nativos) y la integración con cada plataforma; el estado, los formularios, el formato y la exportación son los mismos que usa la web.
 
-> Estado: **las cuatro funcionalidades de la web** (Fase 5), con icono, pantalla de arranque y accesibilidad (Fase 6). Pendiente: probar en dispositivos reales y publicar (Fase 7).
+> Estado: **las cuatro funcionalidades de la web** (Fase 5), con icono, pantalla de arranque y accesibilidad (Fase 6), y lista para publicar (Fase 7): ficha, capturas y pasos en [tienda/](tienda/README.md).
 
 ## Estructura
 
@@ -30,6 +30,8 @@ src/app/
 
 recursos/icono.svg               # fuente del icono de la app
 tools/generar-recursos.mjs       # genera iconos y pantallas de arranque
+tools/capturas.sh                # capturas de la App Store (modo captura: src/app/capturas.ts)
+tienda/                          # ficha de las tiendas, capturas y pasos para publicar
 ```
 
 Cada pestaña tiene su propio store (de `@finsim/shared`): cambiar de pestaña no pierde lo escrito.
@@ -66,11 +68,11 @@ Si la app arranca con `FINSIM_DIAGNOSTICO`, comprueba el runtime (formato, cálc
 
 ```bash
 # iOS (simulador)
-SIMCTL_CHILD_FINSIM_DIAGNOSTICO=1 xcrun simctl launch booted com.etenorio87.finsim
+SIMCTL_CHILD_FINSIM_DIAGNOSTICO=1 xcrun simctl launch booted com.etenoriod.finsim
 xcrun simctl spawn booted log show --last 1m --predicate 'eventMessage CONTAINS "[diag]"'
 
 # Android
-adb shell am start -n com.etenorio87.finsim/com.tns.NativeScriptActivity --es FINSIM_DIAGNOSTICO 1
+adb shell am start -n com.etenoriod.finsim/com.tns.NativeScriptActivity --es FINSIM_DIAGNOSTICO 1
 adb logcat | grep '\[diag\]'
 ```
 
@@ -136,7 +138,34 @@ Con 360 cuotas, la tabla dentro de la tarjeta eran 1800 etiquetas creadas de gol
 
 - **Comisiones en Android: la coma decimal se ignoraba** ("1,5" se quedaba en "15"). Un campo añadido a una pantalla ya cargada recibe `loaded` al insertarse, antes de que Angular escuche el evento y le pase las entradas, así que nunca se configuraba el teclado. Ahora se configura en `ngAfterViewInit` si la vista ya estaba cargada. Afectaba también al panel de amortización parcial.
 
-### Pendiente (Fase 7)
+## Fase 7: preparación para publicar
+
+| Qué | Detalle |
+|---|---|
+| Identificador | `com.etenoriod.finsim`, versión 1.0.0 (compilación 1) |
+| iOS | Solo iPhone y solo en vertical. Manifiesto de privacidad (`PrivacyInfo.xcprivacy`) sin datos recopilados ni rastreo, con las APIs que usa el runtime (UserDefaults, marcas de tiempo de archivos, tiempo desde el arranque). `ITSAppUsesNonExemptEncryption = NO`. Región de desarrollo `es` (textos del sistema en español) |
+| Pantallas | El contenido desplazado ya no pasa por debajo de la barra de estado de iOS (`iosOverflowSafeArea="false"` en las páginas) |
+| Política de privacidad | `apps/web/public/privacidad.html` → https://etenorio87.github.io/finsim/privacidad.html |
+| Capturas | `tools/capturas.sh` en el simulador iPhone 16 Pro Max (1320 × 2868), con la barra de estado de catálogo (9:41) |
+
+### Modo captura
+
+`FINSIM_CAPTURA=<pantalla>` abre la app con el resultado ya calculado. Las pantallas son `formulario`, `simular`, `cuadro`, `amortizacion`, `comparar` y `contado`. Sin la variable no hace nada.
+
+```bash
+SIMCTL_CHILD_FINSIM_CAPTURA=comparar xcrun simctl launch booted com.etenoriod.finsim
+```
+
+### Versiones de publicación
+
+| | iOS | Android |
+|---|---|---|
+| Compilación | `ns build ios --release`: correcta en el simulador; para el dispositivo hace falta el equipo de pago | `.aab` de 43 MB; APK universal de 110 MB (cuatro arquitecturas) |
+| En el teléfono | Aprox. la mitad del `.app` del simulador (86 MB, dos arquitecturas, casi todo el runtime V8). App Store Connect da la cifra real | ~42 MB instalada en arm64 (27 MB de runtime + 15 MB de app). Google Play solo entrega la arquitectura del teléfono |
+| Prueba | Se abre y calcula como en depuración | Arranque en frío 2,5 s (5,5 s en depuración). La etiqueta accesible, la coma en las comisiones y el cuadro funcionan con el código minificado |
+
+### Pendiente
 
 - Probar en dispositivos reales: recibir el archivo en Mail, WhatsApp o Archivos; VoiceOver y TalkBack con el lector activo; la pantalla de arranque de iOS (en el simulador dura milisegundos).
-- Identificador definitivo de la app, firma y tamaño de las versiones de publicación.
+- Compilación firmada para el dispositivo y subida a TestFlight (requiere la cuenta de Apple Developer en Xcode).
+- Google Play, cuando haya cuenta.
