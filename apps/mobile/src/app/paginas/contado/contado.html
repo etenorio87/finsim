@@ -2,7 +2,7 @@
 <ScrollView>
   <StackLayout fsContenedorEnfocable class="pagina">
     <StackLayout class="intro intro-positive">
-      <Label text="¿Te conviene financiar o pagar al contado?" class="titulo" textWrap="true"></Label>
+      <Label text="¿Te conviene financiar o pagar al contado?" class="titulo" accessibilityRole="header" textWrap="true"></Label>
       <Label text="Si tienes el dinero invertido y rindiendo, puede que te convenga financiar. La regla: financiar solo si TAE < rentabilidad neta." class="subtitulo" textWrap="true"></Label>
     </StackLayout>
 
@@ -11,16 +11,16 @@
     <StackLayout [formGroup]="store.formularioInversion" class="tarjeta borde-positive">
       <GridLayout columns="auto, *" class="cabecera-tarjeta">
         <Label col="0" text="💰" class="distintivo distintivo-positive"></Label>
-        <Label col="1" text="Tu inversión" class="titulo-tarjeta"></Label>
+        <Label col="1" text="Tu inversión" class="titulo-tarjeta" accessibilityRole="header" textWrap="true"></Label>
       </GridLayout>
 
       <Label text="Rentabilidad bruta anual (%)" class="etiqueta"></Label>
-      <fs-campo-decimal formControlName="rentabilidadBruta" modo="porcentaje" placeholder="10"
+      <fs-campo-decimal formControlName="rentabilidadBruta" modo="porcentaje" etiqueta="Rentabilidad bruta anual en porcentaje" placeholder="10"
         [invalido]="!!error(inversion.rentabilidadBruta)"></fs-campo-decimal>
       <Label text="La rentabilidad que obtienes ANTES de impuestos" class="ayuda" textWrap="true"></Label>
 
       <Label text="Tipo impositivo (%)" class="etiqueta"></Label>
-      <fs-campo-decimal formControlName="tipoImpositivo" modo="porcentaje" placeholder="19"
+      <fs-campo-decimal formControlName="tipoImpositivo" modo="porcentaje" etiqueta="Tipo impositivo en porcentaje" placeholder="19"
         [invalido]="!!error(inversion.tipoImpositivo)"></fs-campo-decimal>
       @if (error(inversion.tipoImpositivo)) {
         <Label text="Debe estar entre 0 y 100" class="error"></Label>
@@ -42,7 +42,7 @@
       @let financiar = d.recomendacion === 'financiar';
       <StackLayout [class]="financiar ? 'tarjeta borde-positive veredicto-contado' : 'tarjeta borde-primary veredicto-contado'">
         <Label [text]="financiar ? '✅' : '💰'" class="emoji-veredicto"></Label>
-        <Label [text]="financiar ? 'Conviene FINANCIAR' : 'Mejor pagar AL CONTADO'" class="veredicto centrado" textWrap="true"></Label>
+        <Label [text]="financiar ? 'Conviene FINANCIAR' : 'Mejor pagar AL CONTADO'" class="veredicto centrado" accessibilityRole="header" textWrap="true"></Label>
         <Label [text]="financiar ? 'Ganas ' + (d.diferenciaTipos | porcentaje) + ' anual financiando' : 'Pierdes ' + (-d.diferenciaTipos | porcentaje) + ' anual si financias'"
           [class]="financiar ? 'resumen-veredicto texto-positive' : 'resumen-veredicto texto-negative'" textWrap="true"></Label>
 
@@ -64,7 +64,7 @@
       </StackLayout>
 
       @if (store.resultado(); as resultado) {
-        <Label text="Detalle de la financiación" class="titulo-seccion"></Label>
+        <Label text="Detalle de la financiación" class="titulo-seccion" accessibilityRole="header" textWrap="true"></Label>
         <fs-resultado-financiacion [resultado]="resultado" [condiciones]="store.condiciones()" acento="primary"></fs-resultado-financiacion>
       }
     }

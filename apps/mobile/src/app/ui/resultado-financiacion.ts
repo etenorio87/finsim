@@ -5,9 +5,11 @@
  * 3) costes pequeños. La TAE decide; la cuota es una restricción de presupuesto.
  */
 
-import { Component, NO_ERRORS_SCHEMA, computed, inject, input, signal } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, ViewContainerRef, computed, inject, input, signal } from '@angular/core';
+import { ModalDialogService } from '@nativescript/angular';
 import type { Condiciones, Resultado } from '@finsim/core';
 import { ExportacionService, MonedaPipe, PorcentajePipe, TEXTO_PERIODO } from '@finsim/shared';
+import { CuadroAmortizacionComponent, type ContextoCuadro } from './cuadro-amortizacion';
 
 export type AcentoResultado = 'primary' | 'accent' | 'positive';
 
@@ -15,10 +17,13 @@ export type AcentoResultado = 'primary' | 'accent' | 'positive';
   selector: 'fs-resultado-financiacion',
   imports: [MonedaPipe, PorcentajePipe],
   templateUrl: './resultado-financiacion.html',
+  providers: [ModalDialogService],
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class ResultadoFinanciacionComponent {
   private readonly exportacion = inject(ExportacionService);
+  private readonly modales = inject(ModalDialogService);
+  private readonly contenedor = inject(ViewContainerRef);
 
   readonly resultado = input.required<Resultado>();
   readonly condiciones = input.required<Condiciones>();
@@ -28,12 +33,18 @@ export class ResultadoFinanciacionComponent {
   readonly textoDistintivo = input('Mejor oferta');
 
   protected readonly periodo = computed(() => TEXTO_PERIODO[this.condiciones().frecuencia]);
-  protected readonly cuadroVisible = signal(false);
   protected readonly exportando = signal<'excel' | 'pdf' | null>(null);
   protected readonly errorExportacion = signal<string | null>(null);
 
-  protected alternarCuadro(): void {
-    this.cuadroVisible.update((v) => !v);
+  protected verCuadro(): void {
+    const filas = this.resultado().cuadro;
+    if (!filas) return;
+    const contexto: ContextoCuadro = { filas, subtitulo: `${filas.length} cuotas · cada ${this.periodo()}` };
+    void this.modales.showModal(CuadroAmortizacionComponent, {
+      context: contexto,
+      fullscreen: true,
+      viewContainerRef: this.contenedor,
+    });
   }
 
   protected async exportar(formato: 'excel' | 'pdf'): Promise<void> {

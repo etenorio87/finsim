@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Color de los iconos de las pestañas: el de la seleccionada, como su texto (app.css) -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:color="#FF385C"/>
+    <item android:color="#6B7280"/>
+</selector>

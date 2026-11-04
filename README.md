@@ -20,7 +20,7 @@ No es una calculadora genérica de préstamos: es una herramienta que **protege 
 
 ## Estado del proyecto
 
-FinSim es una **plataforma Angular multiplataforma**: un único motor de cálculo compartido por la web y, próximamente, una app móvil nativa.
+FinSim es una **plataforma Angular multiplataforma**: un único motor de cálculo compartido por la web y la app móvil nativa.
 
 | Componente | Tecnología | Estado |
 |---|---|---|
@@ -154,8 +154,8 @@ finsim/
 - [x] **Fase 3** — Verificación de paridad con la web React y cambio del despliegue
 - [x] **Fase 4** — Prueba técnica de NativeScript (exportación y compartir archivos)
 - [x] **Fase 5** — `apps/mobile`: app nativa sobre `libs/shared`
-- [ ] **Fase 6** — Pulido: iconos, splash, accesibilidad, pruebas en dispositivos
-- [ ] **Fase 7** — Publicación en App Store y Google Play
+- [x] **Fase 6** — Pulido: iconos, pantalla de arranque, accesibilidad y rendimiento del cuadro
+- [ ] **Fase 7** — Pruebas en dispositivos reales y publicación en App Store y Google Play
 
 El historial de cambios está en [CHANGELOG.md](CHANGELOG.md).
 

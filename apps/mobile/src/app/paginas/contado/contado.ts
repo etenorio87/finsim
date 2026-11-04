@@ -7,6 +7,7 @@ import { ReactiveFormsModule, type AbstractControl } from '@angular/forms';
 import { Utils } from '@nativescript/core';
 import { ContadoStore, PorcentajePipe, mensajeError } from '@finsim/shared';
 import { CampoDecimalComponent } from '../../ui/campo-decimal';
+import { anunciar, porcentaje } from '../../plataforma/accesibilidad';
 import { ContenedorEnfocableDirective } from '../../ui/contenedor-enfocable';
 import { FormularioCondicionesComponent } from '../../ui/formulario-condiciones';
 import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion';
@@ -35,5 +36,11 @@ export class ContadoComponent {
   protected calcular(): void {
     Utils.dismissSoftInput();
     this.store.calcular();
+    const d = this.store.decision();
+    anunciar(
+      d &&
+        `${d.recomendacion === 'financiar' ? 'Conviene financiar' : 'Mejor pagar al contado'}. ` +
+          `TAE ${porcentaje(d.taeFinanciacion)}, rentabilidad neta ${porcentaje(d.rentabilidadNeta)}`,
+    );
   }
 }
