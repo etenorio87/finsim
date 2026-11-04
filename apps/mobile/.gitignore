@@ -1,0 +1,5 @@
+# NativeScript (generados por el CLI)
+hooks/
+platforms/
+node_modules/
+*.log

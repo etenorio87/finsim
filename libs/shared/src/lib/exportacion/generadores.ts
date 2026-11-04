@@ -7,7 +7,7 @@
  */
 
 import type { Condiciones, FilaCuadro, Resultado } from '@finsim/core';
-import { formatearMoneda, formatearPorcentaje } from '@finsim/core';
+import { formatearFecha, formatearMoneda, formatearPorcentaje } from '@finsim/core';
 import { TEXTO_FRECUENCIA } from '../textos/textos';
 
 export interface ArchivoExportado {
@@ -127,7 +127,7 @@ export async function generarPdf(
   const paginas = doc.getNumberOfPages();
   doc.setFontSize(8);
   doc.setTextColor(128);
-  const textoFecha = fecha.toLocaleDateString('es-ES');
+  const textoFecha = formatearFecha(fecha);
   for (let i = 1; i <= paginas; i++) {
     doc.setPage(i);
     doc.text(

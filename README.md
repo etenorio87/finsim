@@ -27,7 +27,7 @@ FinSim es una **plataforma Angular multiplataforma**: un único motor de cálcul
 | Motor de cálculo `@finsim/core` | TypeScript puro | ✅ Estable, 37 tests |
 | Capa compartida `@finsim/shared` | Angular 22 | ✅ Lista, 45 tests; la usarán las apps Angular |
 | Web `@finsim/web` | Angular 22 + Tailwind v4 | ✅ En producción, 9 tests |
-| App móvil `apps/mobile` | NativeScript + Angular | 📋 Planificada |
+| App móvil `@finsim/mobile` | NativeScript 9 + Angular 22 | 🧪 Prueba técnica superada en iOS y Android ([resultados](apps/mobile/README.md)) |
 
 La primera versión, en React, queda etiquetada como [`v1-react`](https://github.com/etenorio87/finsim/tree/v1-react).
 
@@ -38,7 +38,7 @@ flowchart TD
     core["@finsim/core<br/>motor de cálculo · TypeScript puro, sin DOM"]
     shared["libs/shared<br/>servicios, formularios, pipes, exportación · Angular"]
     web["apps/web<br/>web · Angular + Tailwind"]
-    mobile["apps/mobile<br/>iOS / Android · NativeScript + Angular"]
+    mobile["apps/mobile<br/>iOS / Android · NativeScript + Angular<br/>(prueba técnica)"]
 
     core --> shared
     shared --> web
@@ -46,8 +46,7 @@ flowchart TD
 
     classDef actual fill:#d1fae5,stroke:#059669
     classDef previsto fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray:4
-    class core,shared,web actual
-    class mobile previsto
+    class core,shared,web,mobile actual
 ```
 
 - **`@finsim/core`** concentra toda la lógica financiera. No depende de ningún framework ni del navegador; se comprueba compilándolo sin la librería DOM.
@@ -81,7 +80,7 @@ Casos de uso paso a paso en [USAGE.md](USAGE.md).
 | Lenguaje | TypeScript 6.0 | — |
 | Capa compartida | Angular 22 (signals, Reactive Forms) | — |
 | Web | Angular 22 (zoneless, esbuild), Tailwind CSS v4 | — |
-| Móvil | — | NativeScript 9 + Angular 22 (iOS y Android) |
+| Móvil | NativeScript 9 + Angular 22 (iOS y Android) | — |
 | Exportación | SheetJS (`xlsx`), jsPDF | — |
 | Tests | Vitest | — |
 | CI/CD | GitHub Actions, GitHub Pages | Builds de iOS y Android |
@@ -94,6 +93,8 @@ Requisitos: Node.js 20.19+ (recomendado 24).
 npm install          # instalar dependencias (desde la raíz)
 npm run dev          # web en desarrollo → http://localhost:4200/
 npm run preview      # artefacto de despliegue, como GitHub Pages → http://localhost:4300/finsim/
+npm run ios          # app móvil en el simulador de iOS (requiere Xcode)
+npm run android      # app móvil en Android (requiere Android SDK)
 npm test             # tests de todos los proyectos (con caché de Nx)
 npm run typecheck    # comprobación de tipos
 npm run build        # build de todos los proyectos
@@ -130,12 +131,15 @@ finsim/
 │           ├── exportacion/         # Excel/PDF como bytes + destino por plataforma
 │           └── textos/              # Etiquetas y mensajes
 ├── apps/
-│   └── web/                     # @finsim/web — web Angular
-│       ├── src/app/
-│       │   ├── paginas/             # simulador, comparador, contado, amortización parcial
-│       │   ├── ui/                  # campo decimal, formulario de condiciones, tarjeta de resultado
-│       │   └── plataforma/          # descarga de archivos en el navegador
-│       └── tools/preview-pages.mjs  # vista previa que imita a GitHub Pages
+│   ├── web/                     # @finsim/web — web Angular
+│   │   ├── src/app/
+│   │   │   ├── paginas/             # simulador, comparador, contado, amortización parcial
+│   │   │   ├── ui/                  # campo decimal, formulario de condiciones, tarjeta de resultado
+│   │   │   └── plataforma/          # descarga de archivos en el navegador
+│   │   └── tools/preview-pages.mjs  # vista previa que imita a GitHub Pages
+│   └── mobile/                  # @finsim/mobile — app NativeScript (iOS y Android)
+│       ├── src/app/                 # pantallas, campo decimal nativo, compartir archivos
+│       └── App_Resources/           # iconos, splash y configuración nativa
 ├── .github/workflows/
 │   ├── ci.yml                   # test + typecheck + build en cada PR
 │   └── deploy.yml               # despliegue a GitHub Pages
@@ -148,7 +152,7 @@ finsim/
 - [x] **Fase 1** — `libs/shared`: estado, formularios, pipes y exportación en Angular
 - [x] **Fase 2** — `apps/web`: web Angular con las cuatro funcionalidades
 - [x] **Fase 3** — Verificación de paridad con la web React y cambio del despliegue
-- [ ] **Fase 4** — Prueba técnica de NativeScript (exportación y compartir archivos)
+- [x] **Fase 4** — Prueba técnica de NativeScript (exportación y compartir archivos)
 - [ ] **Fase 5** — `apps/mobile`: app nativa sobre `libs/shared`
 - [ ] **Fase 6** — Pulido: iconos, splash, accesibilidad, pruebas en dispositivos
 - [ ] **Fase 7** — Publicación en App Store y Google Play
