@@ -7,6 +7,7 @@ import { Component, NO_ERRORS_SCHEMA, effect, inject, input, output, untracked }
 import { ReactiveFormsModule } from '@angular/forms';
 import { Utils } from '@nativescript/core';
 import { AmortizacionParcialStore, MonedaPipe, PorcentajePipe, type OrigenAmortizacion } from '@finsim/shared';
+import { anunciar, moneda } from '../../plataforma/accesibilidad';
 import { CampoDecimalComponent } from '../../ui/campo-decimal';
 import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion';
 
@@ -43,6 +44,8 @@ export class AmortizacionParcialComponent {
   protected simular(): void {
     Utils.dismissSoftInput();
     this.store.simular();
+    const r = this.store.resultado();
+    anunciar(r ? `Ahorro en intereses: ${moneda(r.ahorro.intereses)}` : this.store.error());
   }
 
   protected alCerrar(): void {

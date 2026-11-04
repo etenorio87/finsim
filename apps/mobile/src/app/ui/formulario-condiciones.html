@@ -3,22 +3,22 @@
 <StackLayout [formGroup]="form" [class]="'tarjeta borde-' + acento()">
   <GridLayout columns="auto, *" class="cabecera-tarjeta">
     <Label col="0" [text]="letra()" [class]="'distintivo distintivo-' + acento()"></Label>
-    <Label col="1" [text]="titulo()" class="titulo-tarjeta"></Label>
+    <Label col="1" [text]="titulo()" class="titulo-tarjeta" accessibilityRole="header" textWrap="true"></Label>
   </GridLayout>
 
   <Label text="Importe (€)" class="etiqueta"></Label>
-  <fs-campo-decimal formControlName="importe" modo="importe" placeholder="10000" [invalido]="!!error(c.importe)"></fs-campo-decimal>
+  <fs-campo-decimal formControlName="importe" modo="importe" etiqueta="Importe en euros" placeholder="10000" [invalido]="!!error(c.importe)"></fs-campo-decimal>
   @if (error(c.importe); as e) { <Label [text]="e" class="error" textWrap="true"></Label> }
 
   <Label text="Número de cuotas" class="etiqueta"></Label>
-  <fs-campo-decimal formControlName="numeroCuotas" modo="entero" placeholder="24" [invalido]="!!error(c.numeroCuotas)"></fs-campo-decimal>
+  <fs-campo-decimal formControlName="numeroCuotas" modo="entero" etiqueta="Número de cuotas" placeholder="24" [invalido]="!!error(c.numeroCuotas)"></fs-campo-decimal>
   @if (error(c.numeroCuotas); as e) { <Label [text]="e" class="error" textWrap="true"></Label> }
 
   <Label text="Frecuencia" class="etiqueta"></Label>
   <fs-selector formControlName="frecuencia" [opciones]="frecuencias"></fs-selector>
 
   <Label text="TIN anual (%)" class="etiqueta"></Label>
-  <fs-campo-decimal formControlName="tin" modo="porcentaje" placeholder="5,45" [invalido]="!!error(c.tin)"></fs-campo-decimal>
+  <fs-campo-decimal formControlName="tin" modo="porcentaje" etiqueta="TIN anual en porcentaje" placeholder="5,45" [invalido]="!!error(c.tin)"></fs-campo-decimal>
   @if (error(c.tin); as e) {
     <Label [text]="e" class="error" textWrap="true"></Label>
   } @else {
@@ -30,11 +30,11 @@
     @for (comision of c.comisiones.controls; track comision; let i = $index) {
       <StackLayout [formGroupName]="i" class="comision">
         <GridLayout columns="*, auto">
-          <TextField col="0" formControlName="descripcion" hint="Descripción" class="campo campo-compacto"></TextField>
+          <TextField col="0" formControlName="descripcion" hint="Descripción" fsEtiquetaAccesible="Descripción de la comisión" class="campo campo-compacto"></TextField>
           <Label col="1" text="✕" (tap)="eliminarComision(i)" class="eliminar" [accessible]="true" accessibilityLabel="Eliminar comisión" accessibilityRole="button"></Label>
         </GridLayout>
         <GridLayout columns="*, 8, *" class="fila-comision">
-          <fs-campo-decimal col="0" formControlName="importe" modo="importe" placeholder="Importe (€)" [compacto]="true"
+          <fs-campo-decimal col="0" formControlName="importe" modo="importe" etiqueta="Importe de la comisión en euros" placeholder="Importe (€)" [compacto]="true"
             [invalido]="!!error(comision.controls.importe)"></fs-campo-decimal>
           <fs-selector col="2" formControlName="momento" [opciones]="momentos"></fs-selector>
         </GridLayout>

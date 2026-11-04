@@ -2,6 +2,15 @@
 
 ## Migración a plataforma Angular
 
+### 04/11/2026 — Fase 6: pulido de la app móvil
+
+- **Icono de FinSim** (el "%" con el degradado del favicon) en iOS y Android, con icono adaptativo y temático en Android, y **pantalla de arranque** con el fondo de la app. Se generan desde `apps/mobile/recursos/icono.svg` con `tools/generar-recursos.mjs`
+- **Iconos en las pestañas**: SF Symbols en iOS y vectores equivalentes en Android
+- **El cuadro de amortización se abre a pantalla completa** en una lista nativa: con 360 cuotas la app se quedaba congelada 4,7 s; ahora tarda lo mismo que con 24
+- **Accesibilidad**: nombre de cada campo para VoiceOver y TalkBack, aviso con el resultado al calcular, títulos navegables, filas del cuadro leídas completas, áreas táctiles más grandes y texto que sigue el tamaño de letra del sistema también en iOS
+- **Corregido: en Android, los campos de las comisiones descartaban la coma decimal** ("1,5" → "15"), y el panel de amortización parcial también se veía afectado
+- Barra de estado de Android con el color de fondo de la app
+
 ### 04/11/2026 — Fase 5: app móvil completa
 
 - `@finsim/mobile` con las cuatro funcionalidades de la web en tres pestañas: Simular (con amortización parcial), Comparar y Contado. Mismas cifras que la web, verificadas en Android

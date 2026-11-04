@@ -4,17 +4,21 @@
  * aquí solo va la vista.
  */
 
-import { Component, NO_ERRORS_SCHEMA, forwardRef, input } from '@angular/core';
+import { Component, ElementRef, NO_ERRORS_SCHEMA, forwardRef, input, viewChild, type AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { isIOS, type EventData, type TextField } from '@nativescript/core';
 import { CampoDecimalBase } from '@finsim/shared';
+import { EtiquetaAccesibleDirective } from './etiqueta-accesible';
 
 @Component({
   selector: 'fs-campo-decimal',
+  imports: [EtiquetaAccesibleDirective],
   template: `
     <TextField
+      #campo
       [text]="texto()"
       [hint]="placeholder()"
+      [fsEtiquetaAccesible]="etiqueta()"
       [isEnabled]="!deshabilitado()"
       [keyboardType]="modo() === 'entero' ? 'integer' : 'number'"
       (loaded)="alCargar($any($event))"
@@ -29,8 +33,10 @@ import { CampoDecimalBase } from '@finsim/shared';
   schemas: [NO_ERRORS_SCHEMA],
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => CampoDecimalComponent), multi: true }],
 })
-export class CampoDecimalComponent extends CampoDecimalBase {
+export class CampoDecimalComponent extends CampoDecimalBase implements AfterViewInit {
   readonly placeholder = input('');
+  /** Nombre del campo para el lector de pantalla (la etiqueta visible es otro elemento). */
+  readonly etiqueta = input('');
   readonly invalido = input(false);
   /** Estilo compacto para campos secundarios (comisiones). */
   readonly compacto = input(false);
@@ -39,8 +45,26 @@ export class CampoDecimalComponent extends CampoDecimalBase {
     return `campo${this.compacto() ? ' campo-compacto' : ''}${this.invalido() ? ' campo-invalido' : ''}`;
   }
 
+  private readonly campo = viewChild.required<ElementRef<TextField>>('campo');
+  private iniciado = false;
+
+  /**
+   * Un campo añadido a una pantalla ya cargada (una comisión, el panel de
+   * amortización) se carga al insertarlo, antes de que Angular le pase las
+   * entradas (`modo`): ese "loaded" se ignora y se configura aquí.
+   */
+  ngAfterViewInit(): void {
+    this.iniciado = true;
+    const campo = this.campo().nativeElement;
+    if (campo.isLoaded) this.configurarTeclado(campo);
+  }
+
+  /** Cada vez que se vuelve a cargar: Android recrea las vistas nativas al cambiar de pestaña. */
   protected alCargar({ object }: EventData): void {
-    const campo = object as TextField;
+    if (this.iniciado) this.configurarTeclado(object as TextField);
+  }
+
+  private configurarTeclado(campo: TextField): void {
     if (this.modo() === 'entero') return;
     if (isIOS) {
       // Teclado decimal: dígitos y el separador del idioma ("," en español)

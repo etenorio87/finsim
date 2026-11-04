@@ -1,7 +1,7 @@
 <ScrollView>
   <StackLayout fsContenedorEnfocable class="pagina">
     <StackLayout class="intro intro-primary">
-      <Label text="¿Cuál de estas dos ofertas es mejor?" class="titulo" textWrap="true"></Label>
+      <Label text="¿Cuál de estas dos ofertas es mejor?" class="titulo" accessibilityRole="header" textWrap="true"></Label>
       <Label text="El criterio de decisión es la TAE (el precio real del dinero), no la cuota mensual." class="subtitulo" textWrap="true"></Label>
     </StackLayout>
 
@@ -12,7 +12,7 @@
 
     @if (store.comparacion(); as comparacion) {
       <StackLayout class="tarjeta tarjeta-veredicto">
-        <Label [text]="store.titulo()" class="veredicto" textWrap="true"></Label>
+        <Label [text]="store.titulo()" class="veredicto" accessibilityRole="header" textWrap="true"></Label>
         <Label text="Diferencia de TAE" class="etiqueta-coste"></Label>
         <Label [text]="comparacion.diferenciaTae | porcentaje" class="valor-coste texto-primary"></Label>
 

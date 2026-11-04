@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Android 12+: el sistema muestra el icono adaptativo sobre este fondo -->
+    <style name="LaunchScreenTheme" parent="LaunchScreenThemeBase">
+        <item name="android:windowSplashScreenBackground">@color/fs_fondo</item>
+    </style>
+</resources>

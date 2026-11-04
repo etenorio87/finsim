@@ -1,7 +1,7 @@
 <StackLayout>
   <GridLayout columns="*, auto" class="intro intro-positive">
     <StackLayout col="0">
-      <Label text="💰 Amortización parcial" class="titulo"></Label>
+      <Label text="💰 Amortización parcial" class="titulo" accessibilityRole="header" textWrap="true"></Label>
       <Label text="Adelanta capital para deber menos. En general, reducir plazo ahorra más; reducir cuota da más margen cada mes." class="subtitulo" textWrap="true"></Label>
     </StackLayout>
     <Label col="1" text="×" (tap)="alCerrar()" class="cerrar" [accessible]="true" accessibilityLabel="Cerrar amortización parcial" accessibilityRole="button"></Label>
@@ -9,13 +9,13 @@
 
   @if (store.formulario(); as form) {
     <StackLayout [formGroup]="form" class="tarjeta borde-primary">
-      <Label text="Parámetros de la amortización" class="titulo-tarjeta"></Label>
+      <Label text="Parámetros de la amortización" class="titulo-tarjeta" accessibilityRole="header" textWrap="true"></Label>
 
       <Label text="Cantidad a amortizar (€)" class="etiqueta"></Label>
-      <fs-campo-decimal formControlName="capitalAmortizado" modo="importe" placeholder="1000"></fs-campo-decimal>
+      <fs-campo-decimal formControlName="capitalAmortizado" modo="importe" etiqueta="Cantidad a amortizar en euros" placeholder="1000"></fs-campo-decimal>
 
       <Label [text]="'¿En qué cuota? (1 a ' + origen().condiciones.numeroCuotas + ')'" class="etiqueta" textWrap="true"></Label>
-      <fs-campo-decimal formControlName="cuotaAmortizacion" modo="entero" placeholder="6"></fs-campo-decimal>
+      <fs-campo-decimal formControlName="cuotaAmortizacion" modo="entero" etiqueta="Cuota en la que amortizas" placeholder="6"></fs-campo-decimal>
 
       <Label text="Estrategia" class="etiqueta"></Label>
       @for (e of estrategias; track e.valor) {
@@ -38,7 +38,7 @@
 
   @if (store.resultado(); as r) {
     <StackLayout class="tarjeta borde-positive">
-      <Label text="Tu ahorro" class="titulo-tarjeta"></Label>
+      <Label text="Tu ahorro" class="titulo-tarjeta" accessibilityRole="header" textWrap="true"></Label>
       <GridLayout columns="*, 8, *" rows="auto, 8, auto" class="costes">
         <StackLayout row="0" col="0" class="coste">
           <Label text="Ahorro en intereses" class="etiqueta-coste"></Label>

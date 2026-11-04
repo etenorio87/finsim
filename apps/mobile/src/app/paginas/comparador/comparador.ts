@@ -5,6 +5,7 @@
 import { Component, NO_ERRORS_SCHEMA, computed, inject } from '@angular/core';
 import { Utils } from '@nativescript/core';
 import { ComparadorStore, PorcentajePipe } from '@finsim/shared';
+import { anunciar, porcentaje } from '../../plataforma/accesibilidad';
 import { ContenedorEnfocableDirective } from '../../ui/contenedor-enfocable';
 import { FormularioCondicionesComponent } from '../../ui/formulario-condiciones';
 import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion';
@@ -26,5 +27,7 @@ export class ComparadorComponent {
   protected comparar(): void {
     Utils.dismissSoftInput();
     this.store.comparar();
+    const [a, b] = [this.store.resultadoA(), this.store.resultadoB()];
+    anunciar(a && b && `${this.store.titulo()}. TAE de A: ${porcentaje(a.tae)}. TAE de B: ${porcentaje(b.tae)}`);
   }
 }

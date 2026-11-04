@@ -15,13 +15,14 @@ import {
   type CondicionesForm,
 } from '@finsim/shared';
 import { CampoDecimalComponent } from './campo-decimal';
+import { EtiquetaAccesibleDirective } from './etiqueta-accesible';
 import { SelectorComponent } from './selector';
 
 export type Acento = 'primary' | 'accent';
 
 @Component({
   selector: 'fs-formulario-condiciones',
-  imports: [ReactiveFormsModule, NativeScriptFormsModule, CampoDecimalComponent, SelectorComponent],
+  imports: [ReactiveFormsModule, NativeScriptFormsModule, CampoDecimalComponent, EtiquetaAccesibleDirective, SelectorComponent],
   templateUrl: './formulario-condiciones.html',
   schemas: [NO_ERRORS_SCHEMA],
 })

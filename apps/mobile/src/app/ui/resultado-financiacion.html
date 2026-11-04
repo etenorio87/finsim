@@ -2,7 +2,7 @@
 <StackLayout [class]="esGanadora() ? 'tarjeta borde-' + acento() : 'tarjeta'">
   @if (etiqueta(); as titulo) {
     <GridLayout columns="*, auto" class="cabecera-resultado">
-      <Label col="0" [text]="titulo" class="titulo-tarjeta"></Label>
+      <Label col="0" [text]="titulo" class="titulo-tarjeta" accessibilityRole="header" textWrap="true"></Label>
       @if (esGanadora()) {
         <Label col="1" [text]="'✓ ' + textoDistintivo()" [class]="'insignia texto-' + acento() + ' fondo-' + acento()"></Label>
       }
@@ -44,10 +44,10 @@
   </GridLayout>
 
   @if (r.cuadro; as cuadro) {
-    <GridLayout columns="*, auto" (tap)="alternarCuadro()" class="boton-cuadro"
-      [accessible]="true" accessibilityRole="button" [accessibilityState]="cuadroVisible() ? 'expanded' : 'collapsed'">
-      <Label col="0" [text]="(cuadroVisible() ? '▼' : '▶') + '  Ver cuadro de amortización'" [class]="'texto-' + acento()"></Label>
-      <Label col="1" [text]="cuadro.length + ' cuotas'" class="ayuda"></Label>
+    <GridLayout columns="*, auto" (tap)="verCuadro()" class="boton-cuadro"
+      [accessible]="true" accessibilityRole="button" [accessibilityLabel]="'Ver cuadro de amortización, ' + cuadro.length + ' cuotas'">
+      <Label col="0" text="Ver cuadro de amortización" [class]="'texto-' + acento()"></Label>
+      <Label col="1" [text]="cuadro.length + ' cuotas  ›'" class="ayuda"></Label>
     </GridLayout>
 
     <GridLayout columns="*, 8, *" class="exportar">
@@ -58,27 +58,6 @@
     </GridLayout>
     @if (errorExportacion(); as mensaje) {
       <Label [text]="mensaje" class="error" textWrap="true"></Label>
-    }
-
-    @if (cuadroVisible()) {
-      <StackLayout class="cuadro">
-        <GridLayout columns="28, *, *, *, *" class="fila-cuadro cabecera-cuadro">
-          <Label col="0" text="#"></Label>
-          <Label col="1" text="Cuota" class="derecha"></Label>
-          <Label col="2" text="Interés" class="derecha"></Label>
-          <Label col="3" text="Capital" class="derecha"></Label>
-          <Label col="4" text="Pendiente" class="derecha"></Label>
-        </GridLayout>
-        @for (fila of cuadro; track fila.numero; let par = $even) {
-          <GridLayout columns="28, *, *, *, *" [class]="par ? 'fila-cuadro fila-par' : 'fila-cuadro'">
-            <Label col="0" [text]="fila.numero"></Label>
-            <Label col="1" [text]="fila.cuota | moneda" class="derecha"></Label>
-            <Label col="2" [text]="fila.interes | moneda" class="derecha texto-negative"></Label>
-            <Label col="3" [text]="fila.capital | moneda" class="derecha texto-positive"></Label>
-            <Label col="4" [text]="fila.capitalPendiente | moneda" class="derecha negrita"></Label>
-          </GridLayout>
-        }
-      </StackLayout>
     }
   }
 </StackLayout>

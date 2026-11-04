@@ -6,6 +6,7 @@
 import { Component, NO_ERRORS_SCHEMA, computed, inject } from '@angular/core';
 import { Utils } from '@nativescript/core';
 import { AmortizacionParcialStore, SimuladorStore } from '@finsim/shared';
+import { anunciar, moneda, porcentaje } from '../../plataforma/accesibilidad';
 import { ContenedorEnfocableDirective } from '../../ui/contenedor-enfocable';
 import { FormularioCondicionesComponent } from '../../ui/formulario-condiciones';
 import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion';
@@ -32,5 +33,7 @@ export class SimuladorComponent {
     // con el valor anterior al que se está escribiendo.
     Utils.dismissSoftInput();
     this.store.simular();
+    const r = this.store.resultado();
+    anunciar(r && `TAE ${porcentaje(r.tae)}, cuota ${moneda(r.cuota)}`);
   }
 }
