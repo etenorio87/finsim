@@ -19,7 +19,7 @@ import { CampoDecimalBase } from '@finsim/shared';
       [attr.aria-invalid]="invalido()"
       [value]="texto()"
       [disabled]="deshabilitado()"
-      (focus)="alEnfocar(); $any($event.target).select()"
+      (focus)="enfocar($any($event.target))"
       (input)="alEscribir($any($event.target).value)"
       (blur)="alSalir()"
       [class]="clases()"
@@ -33,6 +33,17 @@ export class CampoDecimalComponent extends CampoDecimalBase {
   readonly invalido = input(false);
   /** Estilo compacto para campos secundarios (comisiones). */
   readonly compacto = input(false);
+
+  /**
+   * Sin zone.js, el cambio de "6,00" a "6" llegaría en el siguiente render:
+   * si el usuario (o el autocompletado) escribe antes, el texto nuevo se
+   * añadiría detrás del anterior ("612,5"). Se escribe y selecciona ya.
+   */
+  protected enfocar(campo: HTMLInputElement): void {
+    this.alEnfocar();
+    campo.value = this.texto();
+    campo.select();
+  }
 
   protected clases(): string {
     const base = this.compacto()

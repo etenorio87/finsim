@@ -20,17 +20,16 @@ No es una calculadora genérica de préstamos: es una herramienta que **protege 
 
 ## Estado del proyecto
 
-FinSim está **migrando de una web React a una plataforma Angular multiplataforma**: un único motor de cálculo compartido por una web y una app móvil nativa.
+FinSim es una **plataforma Angular multiplataforma**: un único motor de cálculo compartido por la web y, próximamente, una app móvil nativa.
 
 | Componente | Tecnología | Estado |
 |---|---|---|
 | Motor de cálculo `@finsim/core` | TypeScript puro | ✅ Estable, 37 tests |
-| Web v1 `@finsim/web-react` | React 19 | ✅ En producción, se sustituirá por la web Angular |
 | Capa compartida `@finsim/shared` | Angular 22 | ✅ Lista, 45 tests; la usarán las apps Angular |
-| Web v2 `@finsim/web` | Angular 22 + Tailwind v4 | ✅ Completa, 8 tests; se publicará en la Fase 3 |
+| Web `@finsim/web` | Angular 22 + Tailwind v4 | ✅ En producción, 9 tests |
 | App móvil `apps/mobile` | NativeScript + Angular | 📋 Planificada |
 
-La versión React original queda etiquetada como [`v1-react`](https://github.com/etenorio87/finsim/tree/v1-react).
+La primera versión, en React, queda etiquetada como [`v1-react`](https://github.com/etenorio87/finsim/tree/v1-react).
 
 ## Arquitectura
 
@@ -38,18 +37,16 @@ La versión React original queda etiquetada como [`v1-react`](https://github.com
 flowchart TD
     core["@finsim/core<br/>motor de cálculo · TypeScript puro, sin DOM"]
     shared["libs/shared<br/>servicios, formularios, pipes, exportación · Angular"]
-    react["apps/web-react<br/>web v1 · React"]
-    web["apps/web<br/>web v2 · Angular + Tailwind"]
+    web["apps/web<br/>web · Angular + Tailwind"]
     mobile["apps/mobile<br/>iOS / Android · NativeScript + Angular"]
 
-    core --> react
     core --> shared
     shared --> web
     shared --> mobile
 
     classDef actual fill:#d1fae5,stroke:#059669
     classDef previsto fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray:4
-    class core,react,shared,web actual
+    class core,shared,web actual
     class mobile previsto
 ```
 
@@ -83,7 +80,7 @@ Casos de uso paso a paso en [USAGE.md](USAGE.md).
 | Monorepo | Nx + npm workspaces | — |
 | Lenguaje | TypeScript 6.0 | — |
 | Capa compartida | Angular 22 (signals, Reactive Forms) | — |
-| Web | React 19, Vite, Tailwind CSS v4 | Angular 22, Tailwind CSS v4 |
+| Web | Angular 22 (zoneless, esbuild), Tailwind CSS v4 | — |
 | Móvil | — | NativeScript 9 + Angular 22 (iOS y Android) |
 | Exportación | SheetJS (`xlsx`), jsPDF | — |
 | Tests | Vitest | — |
@@ -95,8 +92,8 @@ Requisitos: Node.js 20.19+ (recomendado 24).
 
 ```bash
 npm install          # instalar dependencias (desde la raíz)
-npm run dev          # web React (en producción) → http://localhost:5173/finsim/
-npm run dev:web      # web Angular → http://localhost:4200/
+npm run dev          # web en desarrollo → http://localhost:4200/
+npm run preview      # artefacto de despliegue, como GitHub Pages → http://localhost:4300/finsim/
 npm test             # tests de todos los proyectos (con caché de Nx)
 npm run typecheck    # comprobación de tipos
 npm run build        # build de todos los proyectos
@@ -106,7 +103,7 @@ npm run ejemplo      # ejemplo del motor por consola
 npx nx run @finsim/core:test
 npx nx run @finsim/shared:test
 npx nx run @finsim/web:build
-npx nx run @finsim/web-react:build
+npx nx run @finsim/web:pages      # build de producción + 404.html
 ```
 
 ## Estructura
@@ -133,12 +130,12 @@ finsim/
 │           ├── exportacion/         # Excel/PDF como bytes + destino por plataforma
 │           └── textos/              # Etiquetas y mensajes
 ├── apps/
-│   ├── web/                     # @finsim/web — web v2 (Angular), pendiente de publicar
-│   │   └── src/app/
-│   │       ├── paginas/             # simulador, comparador, contado, amortización parcial
-│   │       ├── ui/                  # campo decimal, formulario de condiciones, tarjeta de resultado
-│   │       └── plataforma/          # descarga de archivos en el navegador
-│   └── web-react/               # @finsim/web-react — web v1 en producción
+│   └── web/                     # @finsim/web — web Angular
+│       ├── src/app/
+│       │   ├── paginas/             # simulador, comparador, contado, amortización parcial
+│       │   ├── ui/                  # campo decimal, formulario de condiciones, tarjeta de resultado
+│       │   └── plataforma/          # descarga de archivos en el navegador
+│       └── tools/preview-pages.mjs  # vista previa que imita a GitHub Pages
 ├── .github/workflows/
 │   ├── ci.yml                   # test + typecheck + build en cada PR
 │   └── deploy.yml               # despliegue a GitHub Pages
@@ -150,19 +147,20 @@ finsim/
 - [x] **Fase 0** — Monorepo Nx y extracción de `@finsim/core`
 - [x] **Fase 1** — `libs/shared`: estado, formularios, pipes y exportación en Angular
 - [x] **Fase 2** — `apps/web`: web Angular con las cuatro funcionalidades
-- [ ] **Fase 3** — Verificación de paridad con la web React y cambio del despliegue
+- [x] **Fase 3** — Verificación de paridad con la web React y cambio del despliegue
 - [ ] **Fase 4** — Prueba técnica de NativeScript (exportación y compartir archivos)
 - [ ] **Fase 5** — `apps/mobile`: app nativa sobre `libs/shared`
 - [ ] **Fase 6** — Pulido: iconos, splash, accesibilidad, pruebas en dispositivos
 - [ ] **Fase 7** — Publicación en App Store y Google Play
 
-El historial de cambios de la v1 está en [CHANGELOG.md](CHANGELOG.md).
+El historial de cambios está en [CHANGELOG.md](CHANGELOG.md).
 
 ## Despliegue
 
 - **Producción**: https://etenorio87.github.io/finsim/
 - **CI**: cada pull request ejecuta tests, typecheck y build
-- **CD**: cada push a `main` que afecte a la web o al motor la despliega en GitHub Pages
+- **CD**: cada push a `main` que afecte a la web, a las librerías o a la configuración común la despliega en GitHub Pages
+- **Enlaces directos**: Pages sirve `404.html` (copia de `index.html`) para las rutas de la app, y el router de Angular muestra la pantalla
 
 ## Licencia
 

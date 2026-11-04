@@ -57,10 +57,16 @@ El patrón de todos los stores: `formulario` (Reactive Forms) → `resultado` (`
 @Component({
   selector: 'app-campo-decimal',
   template: `<input inputmode="decimal" [value]="texto()" [disabled]="deshabilitado()"
-               (focus)="alEnfocar()" (input)="alEscribir($any($event.target).value)" (blur)="alSalir()" />`,
+               (focus)="enfocar($any($event.target))" (input)="alEscribir($any($event.target).value)" (blur)="alSalir()" />`,
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: CampoDecimalComponent, multi: true }],
 })
-export class CampoDecimalComponent extends CampoDecimalBase {}
+export class CampoDecimalComponent extends CampoDecimalBase {
+  protected enfocar(campo: HTMLInputElement) {
+    this.alEnfocar();
+    campo.value = this.texto(); // sin esperar al render: ver la nota de abajo
+    campo.select();
+  }
+}
 
 // NativeScript
 @Component({
@@ -75,6 +81,8 @@ export class CampoDecimalComponent extends CampoDecimalBase {}
 ```html
 <app-campo-decimal formControlName="tin" modo="porcentaje" />
 ```
+
+**Al enfocar, escribe el texto editable en el mismo evento.** Sin zone.js, el cambio de `10.000,00` a `10000` llega en el siguiente render; si se escribe antes (autocompletado, tecleo rápido), lo escrito se añade tras el texto anterior (`6` + `12,5` → `612,5`). La web lo hace en `enfocar()`; la app móvil tendrá que hacer lo mismo con su `TextField`.
 
 Modos: `importe` (`10.000,00`), `porcentaje` (decimal del dominio, se edita como `5,45`) y `entero` (`24`).
 
