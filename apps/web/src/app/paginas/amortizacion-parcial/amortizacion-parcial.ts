@@ -11,6 +11,8 @@ import { ResultadoFinanciacionComponent } from '../../ui/resultado-financiacion'
 
 @Component({
   selector: 'fs-amortizacion-parcial',
+  // Los elementos propios son inline: sin esto se ignoran márgenes como space-y-*
+  host: { class: 'block' },
   imports: [ReactiveFormsModule, CampoDecimalComponent, ResultadoFinanciacionComponent, MonedaPipe, PorcentajePipe],
   templateUrl: './amortizacion-parcial.html',
 })
