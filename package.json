@@ -11,8 +11,8 @@
   "scripts": {
     "dev": "nx run @finsim/web:serve",
     "preview": "nx run @finsim/web:preview",
-    "ios": "nx run @finsim/mobile:ios",
-    "android": "nx run @finsim/mobile:android",
+    "ios": "npm run ios -w @finsim/mobile",
+    "android": "npm run android -w @finsim/mobile",
     "build": "nx run-many -t build",
     "test": "nx run-many -t test",
     "typecheck": "nx run-many -t typecheck",
