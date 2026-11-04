@@ -2,6 +2,14 @@
 
 ## Migración a plataforma Angular
 
+### 04/11/2026 — Fase 4: prueba técnica de NativeScript
+
+- Nueva app `@finsim/mobile` (NativeScript 9 + Angular 22, sin zone.js) con la pantalla del simulador sobre `@finsim/shared`. Probada en el simulador de iOS y el emulador de Android: cálculo, formato, Excel, PDF y menú de compartir. Resultados en [apps/mobile/README.md](apps/mobile/README.md)
+- **El formato es-ES ya no depende de `Intl`**: el V8 de NativeScript no lo incluye y mostraba `10000` en vez de `10.000,00`. `formatearNumero()` y `formatearFecha()` en `@finsim/core` dan el mismo texto que `Intl` (tests contra `Intl` con más de 10.000 casos), así que la web no cambia
+- Compartir archivos con código propio: `UIActivityViewController` en iOS y `FileProvider` + `ACTION_SEND` en Android
+- Campo decimal nativo: teclado decimal en iOS, coma y punto en Android, selección del valor al enfocar
+- `npm run ios` y `npm run android` desde la raíz; `typecheck` de la app en la CI
+
 ### 03/11/2026 — Fase 3: la web Angular pasa a producción
 
 - **https://etenorio87.github.io/finsim/ sirve la web Angular.** Cada pantalla tiene su enlace: `/finsim/simular`, `/finsim/comparar`, `/finsim/contado`. Funcionan los enlaces directos y la recarga gracias a `404.html`

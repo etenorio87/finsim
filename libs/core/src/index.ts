@@ -21,4 +21,6 @@ export {
   parseDecimal,
   formatearMoneda,
   formatearPorcentaje,
+  formatearNumero,
+  formatearFecha,
 } from './formato';

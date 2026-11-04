@@ -1,0 +1,22 @@
+/* Colores del tema de la web (apps/web/src/styles.css) */
+Page { background-color: #fffbf7; }
+ActionBar { background-color: #000000; color: #ffffff; }
+
+.pagina { padding: 16; }
+.titulo { font-size: 22; font-weight: bold; color: #000000; }
+.subtitulo { font-size: 14; color: #4b5563; margin-bottom: 12; }
+
+.tarjeta { background-color: #ffffff; border-radius: 16; padding: 16; margin-bottom: 16; border-width: 1; border-color: #e5e7eb; }
+.etiqueta { font-size: 13; color: #374151; margin-top: 10; margin-bottom: 4; }
+.campo { font-size: 17; padding: 10 12; border-width: 1; border-color: #d1d5db; border-radius: 10; background-color: #ffffff; color: #000000; }
+
+.boton { border-radius: 14; font-weight: bold; font-size: 16; color: #ffffff; padding: 14; }
+.boton-principal { background-color: #000000; margin-bottom: 16; }
+.boton-excel { background-color: #4ecdc4; }
+.boton-pdf { background-color: #e74c3c; }
+
+.tae { font-size: 40; font-weight: bold; color: #ff385c; }
+.cuota { font-size: 24; font-weight: bold; color: #000000; }
+.detalle { font-size: 14; color: #4b5563; margin-top: 6; }
+.exportar { margin-top: 16; }
+.error { color: #dc2626; margin-top: 8; }

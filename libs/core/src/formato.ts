@@ -21,22 +21,71 @@ export function parseDecimal(valor: string): number {
   return isNaN(numero) ? 0 : numero;
 }
 
+/*
+ * Sin Intl a propósito: el V8 de NativeScript se compila sin soporte de
+ * internacionalización y allí toLocaleString('es-ES') devuelve "10000.5".
+ * Estas funciones reproducen el formato es-ES de Intl (comprobado en los
+ * tests contra Intl) y dan el mismo resultado en la web y en el móvil.
+ */
+
+/**
+ * Número con `decimales` cifras decimales en formato es-ES: coma decimal y
+ * punto de miles solo a partir de 5 cifras enteras ("1234,56", "12.345,67").
+ */
+export function formatearNumero(valor: number, decimales: number): string {
+  const [entera = '', fraccion] = redondear(Math.abs(valor), decimales).split('.');
+  const conMiles = entera.length >= 5 ? entera.replace(/\B(?=(\d{3})+$)/g, '.') : entera;
+  // Sin "-0,00": un negativo que se redondea a cero se muestra como cero
+  const esCero = /^0*$/.test(entera + (fraccion ?? ''));
+  const signo = valor < 0 && !esCero ? '-' : '';
+  return signo + conMiles + (fraccion ? `,${fraccion}` : '');
+}
+
+/**
+ * Redondeo "mitad hacia arriba" sobre la representación decimal más corta del
+ * número (la de String(n)), como Intl: 5.925 → "5.93", aunque el binario sea
+ * 5.92499…; toFixed daría "5.92".
+ */
+function redondear(positivo: number, decimales: number): string {
+  const texto = String(positivo);
+  if (texto.includes('e')) return positivo.toFixed(decimales); // < 1e-6 o ≥ 1e21
+  const [entera = '0', fraccion = ''] = texto.split('.');
+  if (fraccion.length <= decimales) {
+    return decimales === 0 ? entera : `${entera}.${fraccion.padEnd(decimales, '0')}`;
+  }
+  let cifras = entera + fraccion.slice(0, decimales);
+  if (fraccion.charAt(decimales) >= '5') cifras = sumarUno(cifras);
+  const corte = cifras.length - decimales;
+  return decimales === 0 ? cifras : `${cifras.slice(0, corte)}.${cifras.slice(corte)}`;
+}
+
+/** "1299" → "1300", "999" → "1000" */
+function sumarUno(cifras: string): string {
+  const d = cifras.split('');
+  let i = d.length - 1;
+  while (i >= 0 && d[i] === '9') d[i--] = '0';
+  if (i < 0) return `1${d.join('')}`;
+  d[i] = String(Number(d[i]) + 1);
+  return d.join('');
+}
+
 /**
  * Formatea un número como moneda en euros (sin símbolo), formato es-ES
  */
 export function formatearMoneda(valor: number): string {
-  return valor.toLocaleString('es-ES', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return formatearNumero(valor, 2);
 }
 
 /**
  * Formatea un decimal del dominio como porcentaje (sin símbolo), formato es-ES
  */
 export function formatearPorcentaje(valor: number): string {
-  return (valor * 100).toLocaleString('es-ES', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return formatearNumero(valor * 100, 2);
+}
+
+/**
+ * Fecha en formato es-ES corto: "4/11/2026"
+ */
+export function formatearFecha(fecha: Date): string {
+  return `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
 }
