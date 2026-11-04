@@ -9,7 +9,7 @@ App nativa de FinSim para iOS y Android: **NativeScript 9 + Angular 22** sobre `
 Requisitos: Xcode (iOS) y/o Android SDK + JDK 21 (Android), con `ANDROID_HOME` definido. `npx ns doctor` (desde `apps/mobile`) comprueba el entorno.
 
 ```bash
-npm run ios          # compila, instala en el simulador y recarga al guardar
+npm run ios          # compila, instala en el simulador y recarga al guardar (desde la raíz o desde apps/mobile)
 npm run android      # ídem en el emulador o dispositivo Android
 npx nx run @finsim/mobile:typecheck
 ```
