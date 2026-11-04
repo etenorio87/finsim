@@ -4,6 +4,9 @@ import { DESTINO_EXPORTACION } from '@finsim/shared';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { CompartirArchivo } from './app/plataforma/compartir-archivo';
+import { configurarTeclado } from './app/plataforma/teclado';
+
+configurarTeclado();
 
 runNativeScriptAngularApp({
   appModuleBootstrap: () =>
