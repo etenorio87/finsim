@@ -20,7 +20,9 @@ src/app/
 │   ├── formulario-condiciones.* # importe, cuotas, frecuencia, TIN y comisiones
 │   ├── resultado-financiacion.* # TAE, cuota, costes, cuadro y exportación
 │   └── contenedor-enfocable.ts  # Android: evita que el foco salte al primer campo
-├── plataforma/compartir-archivo.ts  # guardar y abrir el menú de compartir
+├── plataforma/
+│   ├── compartir-archivo.ts     # guardar y abrir el menú de compartir
+│   └── teclado.ts               # iOS: que el teclado no tape los campos
 └── diagnostico.ts               # modo diagnóstico del runtime
 ```
 
@@ -77,6 +79,7 @@ Probado en el simulador de iOS (iPhone 15 Pro) y en el emulador de Android (API 
 - Separador de miles: `parseDecimal` entiende `1.234,56` y `1,234.56` (el último separador es el decimal).
 - `SegmentedBar` sustituido por un selector propio; sin `ActionBar` (cada pestaña tiene su cabecera).
 - Directiva `fsContenedorEnfocable` en todas las pantallas.
+- iOS: el teclado tapaba los campos de la parte baja (p. ej. las comisiones). `@nativescript/iqkeyboardmanager` desplaza la pantalla, añade una barra con "Hecho" y anterior/siguiente (el teclado decimal no tiene tecla para cerrarse) y cierra el teclado al tocar fuera. Ver `plataforma/teclado.ts`.
 - El campo comunica el valor mientras se escribe: en Android, cerrar el teclado con "atrás" no quita el foco y el resultado no se actualizaba. "Hecho" en el teclado sale del campo.
 
 ## Verificación de la Fase 5
