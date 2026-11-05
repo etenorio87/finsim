@@ -2,6 +2,12 @@
 
 ## Migración a plataforma Angular
 
+### 05/11/2026 — Guía de pruebas y primera compilación en TestFlight
+
+- **Versión 1.0.0 (1) subida a TestFlight**. La guía explica la subida con `xcodebuild archive`: `ns build --for-device` firma con un perfil de desarrollo que TestFlight no admite
+- **Guía de pruebas** (`apps/mobile/tienda/PRUEBAS.md`): datos de entrada y resultados esperados, calculados con el motor, con al menos dos casos por funcionalidad
+- Cómo instalar la APK en Android sin Google Play
+
 ### 04/11/2026 — Fase 7: preparación para publicar
 
 - **Identificador definitivo `com.etenoriod.finsim`**, versión 1.0.0
