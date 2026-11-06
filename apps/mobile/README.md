@@ -160,12 +160,12 @@ SIMCTL_CHILD_FINSIM_CAPTURA=comparar xcrun simctl launch booted com.etenoriod.fi
 
 | | iOS | Android |
 |---|---|---|
-| Compilación | `ns build ios --release`: correcta en el simulador; para el dispositivo hace falta el equipo de pago | `.aab` de 43 MB; APK universal de 110 MB (cuatro arquitecturas) |
+| Compilación | Archivo de Xcode con distribución App Store (ver [tienda/README.md](tienda/README.md)): IPA de 15 MB, subido a TestFlight | `.aab` de 43 MB; APK universal de 110 MB (cuatro arquitecturas) |
 | En el teléfono | Aprox. la mitad del `.app` del simulador (86 MB, dos arquitecturas, casi todo el runtime V8). App Store Connect da la cifra real | ~42 MB instalada en arm64 (27 MB de runtime + 15 MB de app). Google Play solo entrega la arquitectura del teléfono |
 | Prueba | Se abre y calcula como en depuración | Arranque en frío 2,5 s (5,5 s en depuración). La etiqueta accesible, la coma en las comisiones y el cuadro funcionan con el código minificado |
 
 ### Pendiente
 
 - Probar en dispositivos reales: recibir el archivo en Mail, WhatsApp o Archivos; VoiceOver y TalkBack con el lector activo; la pantalla de arranque de iOS (en el simulador dura milisegundos).
-- Compilación firmada para el dispositivo y subida a TestFlight (requiere la cuenta de Apple Developer en Xcode).
+- Recorrer la [guía de pruebas](tienda/PRUEBAS.md) en iPhone (TestFlight) y en Android (APK instalada a mano).
 - Google Play, cuando haya cuenta.

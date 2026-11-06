@@ -114,14 +114,26 @@ Google Play pide además:
    - idioma español;
    - bundle ID `com.etenoriod.finsim` (si no aparece, créalo en developer.apple.com → Identifiers);
    - SKU `finsim`.
-3. **Compilar y subir**:
+3. **Compilar y subir**. `ns build ios --for-device` firma con un perfil de desarrollo, y TestFlight no lo admite. Se usa ese build para preparar el proyecto y después Xcode archiva y sube con distribución App Store:
    ```bash
    cd apps/mobile
-   npx ns build ios --release --for-device --team-id <TEAM_ID>   # genera el .ipa firmado
-   npx ns publish ios --ipa platforms/ios/build/Release-iphoneos/mobile.ipa
+   npx ns build ios --release --for-device --team-id ZDTB8XV3KW   # prepara platforms/ios
+   cd platforms/ios
+   xcodebuild -project mobile.xcodeproj -scheme mobile -configuration Release \
+     -destination 'generic/platform=iOS' -archivePath /tmp/finsim.xcarchive \
+     DEVELOPMENT_TEAM=ZDTB8XV3KW -allowProvisioningUpdates archive
+   xcodebuild -exportArchive -archivePath /tmp/finsim.xcarchive \
+     -exportOptionsPlist exportar.plist -exportPath /tmp/finsim-export -allowProvisioningUpdates
    ```
-   También se puede abrir `platforms/ios/mobile.xcworkspace` en Xcode y usar **Product → Archive → Distribute App**.
-4. **TestFlight**: instala la compilación en tu iPhone y haz las pruebas en un dispositivo real (ver abajo).
+   `exportar.plist` lleva `method` = `app-store-connect`, `destination` = `upload` y `teamID`. La subida usa la cuenta iniciada en Xcode, sin contraseñas aparte.
+
+   Antes de cada nueva subida, sube `CFBundleVersion` en `App_Resources/iOS/Info.plist` (2, 3…): App Store Connect rechaza compilaciones repetidas.
+
+   También se puede abrir `platforms/ios/mobile.xcodeproj` en Xcode y usar **Product → Archive → Distribute App**.
+4. **TestFlight**:
+   - en **TestFlight → Pruebas internas**, crea un grupo y añádete como probador;
+   - acepta la invitación del correo desde el iPhone;
+   - haz las pruebas de [PRUEBAS.md](PRUEBAS.md).
 5. Completa la ficha con los textos de este documento y las capturas y envíala a revisión.
 
 ## Pasos para publicar en Google Play
@@ -145,12 +157,23 @@ Google Play pide además:
    - completa la ficha y los cuestionarios con los datos de este documento.
 4. Las cuentas personales nuevas deben hacer una **prueba cerrada con al menos 12 testers durante 14 días** antes de poder publicar en producción.
 
+## Instalar en Android sin Google Play (pruebas)
+
+1. Compila una APK firmada. Para pruebas basta una clave temporal; la de Google Play es otra (ver arriba). Si la compilación falla con "No compatible version of the Android SDK Build-tools", define antes `export ANDROID_HOME=~/Library/Android/sdk`.
+   ```bash
+   cd apps/mobile
+   npx ns build android --release --key-store-path <clave.jks> --key-store-alias <alias> \
+     --key-store-password <contraseña> --key-store-alias-password <contraseña>
+   # → platforms/android/app/build/outputs/apk/release/app-release.apk
+   ```
+2. Pásala al móvil de una de estas dos formas:
+   - **Por cable:**
+     - activa las opciones de desarrollador (Ajustes → Información del teléfono → pulsa 7 veces "Número de compilación");
+     - activa **Depuración USB**;
+     - ejecuta `adb install -r app-release.apk`.
+   - **Sin cable:** envíate la APK (Drive, correo, Telegram…) y ábrela en el móvil. Android pedirá permitir instalar apps de esa aplicación ("Fuentes desconocidas"). Play Protect puede avisar de que la app no es de Google Play: elige **Instalar de todas formas**.
+3. Si ya tenías una versión firmada con otra clave, desinstálala antes. Android no actualiza apps con firmas distintas.
+
 ## Pruebas en un dispositivo real (antes de enviar a revisión)
 
-- [ ] Pantalla de arranque e icono en la pantalla de inicio
-- [ ] Simular, comparar y contado con los datos de ejemplo (TAE 6,17 %, "Mejor oferta: A", "Conviene FINANCIAR")
-- [ ] Comisión con decimales ("1,5") y el teclado no tapa el campo
-- [ ] Exportar Excel y PDF: abrirlos en Archivos, enviarlos por Mail y WhatsApp
-- [ ] Cuadro de 360 cuotas: se abre y se desplaza con fluidez
-- [ ] VoiceOver: los campos dicen su nombre y, al simular, se anuncia el resultado
-- [ ] Texto grande (Ajustes → Accesibilidad → Pantalla y tamaño del texto)
+Guía completa, con los datos que hay que introducir y los resultados esperados: [PRUEBAS.md](PRUEBAS.md).
