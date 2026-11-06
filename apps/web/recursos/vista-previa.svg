@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Fuente de public/vista-previa.png, la imagen al compartir el enlace.
+       Se regenera con: node apps/web/tools/generar-vista-previa.mjs -->
+  <defs>
+    <linearGradient id="degradado" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#fffbf7"/>
+  <rect y="606" width="1200" height="24" fill="url(#degradado)"/>
+  <g transform="translate(90 155)">
+    <rect width="320" height="320" rx="72" fill="url(#degradado)"/>
+    <g fill="none" stroke="#ffffff" stroke-linecap="round" transform="scale(0.3125)">
+      <circle cx="368" cy="368" r="88" stroke-width="64"/>
+      <circle cx="656" cy="656" r="88" stroke-width="64"/>
+      <line x1="700" y1="324" x2="324" y2="700" stroke-width="72"/>
+    </g>
+  </g>
+  <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+    <text x="480" y="250" font-size="96" font-weight="bold" fill="#000000">FinSim</text>
+    <text x="480" y="325" font-size="44" font-weight="bold" fill="#ff385c">El precio real de tu financiación</text>
+    <text x="480" y="395" font-size="32" fill="#4b5563">Calcula la TAE con comisiones, compara</text>
+    <text x="480" y="440" font-size="32" fill="#4b5563">ofertas y decide si financiar o pagar</text>
+    <text x="480" y="485" font-size="32" fill="#4b5563">al contado. Gratis y sin registro.</text>
+  </g>
+</svg>
